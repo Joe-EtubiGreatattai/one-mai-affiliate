@@ -20,6 +20,8 @@ import CreateNewPassword from "./Pages/CreateNewPassword";
 import HomePage from "./Pages/HomePage";
 import Referrals from "./Pages/Referals";
 import NotificationPage from "./Pages/NotificationPage";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Components
 import Layout from "./Components/Layout";
@@ -81,6 +83,7 @@ function App() {
   return (
     <>
       <Toaster />
+      <ToastContainer position="bottom-right" autoClose={5000} />
 
       {/* PWA Install Banner - Updated to top with less height */}
       {/* {showBanner && (

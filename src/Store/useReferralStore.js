@@ -37,6 +37,39 @@ const useReferralStore = create((set, get) => ({
     }
   },
 
+  // Add this to useReferralStore.js, inside the create function after checkReferralCode
+  createReferral: async (referralCode) => {
+    if (!referralCode || typeof referralCode !== "string") {
+      set({ error: "Invalid referral code format", loading: false });
+      return { success: false };
+    }
+
+    set({ loading: true, error: null });
+
+    try {
+      const response = await axios.post(
+        "/api/referral/create-referral",
+        { referral_code: referralCode },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const result = response.data.data || response.data;
+      set({ loading: false });
+      return { success: true, data: result };
+    } catch (error) {
+      const errorMessage = get().handleError(
+        error,
+        "Failed to create referral"
+      );
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
   // Check referral code validity
   checkReferralCode: async (code) => {
     if (!code || typeof code !== "string") {
@@ -76,6 +109,34 @@ const useReferralStore = create((set, get) => ({
     }
   },
 
+  // Add this to useReferralStore.js, inside the create function
+  fetchReferralCode: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.get("/api/referral/fetch-referral");
+      const data = response.data.data || response.data;
+      set({
+        referralData: {
+          ...get().referralData,
+          affiliateStats: {
+            ...get().referralData?.affiliateStats,
+            referralCode: data.referralCode
+          }
+        },
+        loading: false
+      });
+      return data;
+    } catch (error) {
+      const errorMessage = get().handleError(
+        error,
+        "Failed to fetch referral code"
+      );
+      set({ error: errorMessage, loading: false });
+      throw error;
+    }
+  },
+
+
   // Clear referral state
   clearReferralData: () =>
     set({
@@ -94,5 +155,7 @@ const useReferralStore = create((set, get) => ({
       error: null,
     }),
 }));
+
+
 
 export default useReferralStore;
