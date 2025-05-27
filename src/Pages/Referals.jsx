@@ -413,7 +413,7 @@ function Referrals() {
             {/* Fixed Add Referral button with reduced padding */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
+              className="flex items-center justify-center px-3 bg-blue-600 h-12 text-white rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
             >
               <FiPlus className="mr-1.5" size={16} />
               <span>Add Referral</span>

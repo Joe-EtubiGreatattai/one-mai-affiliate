@@ -185,7 +185,7 @@ function DashBoard({ welcomeOnly = undefined }) {
             <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-1 sm:mb-2">
               Total Referrals
             </h3>
-            <p className="text-2xl sm:text-3xl font-bold text-indigo-600">
+            <p className="text-2xl sm:text-3xl font-bold text-blue-600">
               {totalReferrals}
             </p>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -204,7 +204,7 @@ function DashBoard({ welcomeOnly = undefined }) {
               {referralCode && (
                 <button
                   onClick={copyReferralCode}
-                  className="text-indigo-600 hover:text-indigo-800 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                  className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-gray-100 transition-colors"
                   title="Copy to clipboard"
                   aria-label="Copy referral code"
                 >

@@ -96,7 +96,7 @@ const Layout = () => {
       className={({ isActive }) =>
         `flex items-center p-3 rounded-lg transition-colors relative ${
           isActive
-            ? "bg-indigo-50 text-indigo-600 font-medium dark:bg-gray-700 dark:text-white"
+            ? "bg-blue-50 text-blue-600 font-medium dark:bg-gray-700 dark:text-white"
             : "text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
         }`
       }
@@ -107,7 +107,7 @@ const Layout = () => {
           <span className="flex-shrink-0">{icon}</span>
           <span className="ml-3 text-sm">{text}</span>
           {isActive && (
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-md"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r-md"></div>
           )}
         </>
       )}
@@ -323,7 +323,7 @@ const Layout = () => {
                           : user.image
                       }
                       alt="Profile"
-                      className="h-8 w-8 rounded-full object-cover border-2 border-indigo-100 dark:border-gray-600"
+                      className="h-8 w-8 rounded-full object-cover border-2 border-blue-100 dark:border-gray-600"
                     />
                   ) : (
                     <FaUserCircle className="h-8 w-8 text-gray-400 dark:text-gray-300" />
