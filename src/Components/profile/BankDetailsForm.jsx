@@ -52,8 +52,8 @@ const BankDetailsForm = ({
         accountHolderName: bankDetails.beneficiaryName.trim(),
         iban: bankDetails.ibanNumber.replace(/\s/g, ""),
         bic: bankDetails.swiftCode.trim(),
-        country: "DE",
-        currency: "EUR",
+        // country: "DE",
+        // currency: "EUR",
       };
 
       if (!payload.bankName || !payload.accountHolderName || !payload.iban) {

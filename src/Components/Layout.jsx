@@ -24,11 +24,9 @@ const Layout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const profileButtonRef = useRef(null);
-  const mobileSidebarRef = useRef(null);
   const tabletSidebarRef = useRef(null);
   const desktopSidebarRef = useRef(null);
   const dropdownRef = useRef(null);
-  const mobileToggleRef = useRef(null);
   const tabletToggleRef = useRef(null);
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
@@ -56,20 +54,14 @@ const Layout = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const isOutsideMobile =
-        mobileMenuOpen &&
-        mobileSidebarRef.current &&
-        !mobileSidebarRef.current.contains(event.target);
       const isOutsideTablet =
         mobileMenuOpen &&
         tabletSidebarRef.current &&
         !tabletSidebarRef.current.contains(event.target);
       const isToggleButton =
-        (mobileToggleRef.current &&
-          mobileToggleRef.current.contains(event.target)) ||
-        (tabletToggleRef.current &&
-          tabletToggleRef.current.contains(event.target));
-      if ((isOutsideMobile || isOutsideTablet) && !isToggleButton) {
+        tabletToggleRef.current &&
+        tabletToggleRef.current.contains(event.target);
+      if (isOutsideTablet && !isToggleButton) {
         setMobileMenuOpen(false);
       }
     };
@@ -114,6 +106,31 @@ const Layout = () => {
     </NavLink>
   );
 
+  // Mobile Bottom Tab Item Component
+  const BottomTabItem = ({ to, icon, text }) => (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `flex flex-col items-center justify-center py-2 px-3 flex-1 transition-colors ${
+          isActive
+            ? "text-blue-600 dark:text-blue-400"
+            : "text-gray-500 dark:text-gray-400"
+        }`
+      }
+      end
+    >
+      {({ isActive }) => (
+        <>
+          <span className="mb-1">{icon}</span>
+          <span className="text-xs font-medium">{text}</span>
+          {isActive && (
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-t-full"></div>
+          )}
+        </>
+      )}
+    </NavLink>
+  );
+
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Desktop Sidebar - Visible on lg screens and up */}
@@ -125,12 +142,6 @@ const Layout = () => {
       >
         <div className="flex justify-between items-center h-20 p-4 border-b border-gray-200 dark:border-gray-700">
           <img src={Logo} alt="MAI Logo" className="h-12" />
-          <button
-            onClick={toggleMobileMenu}
-            className="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <FiX className="h-5 w-5" />
-          </button>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
@@ -153,14 +164,6 @@ const Layout = () => {
             />
           </>
         </nav>
-
-        {/* <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <NavItem
-            to="/settings"
-            icon={<FiSettings size={20} />}
-            text="Settings"
-          />
-        </div> */}
       </div>
 
       {/* Tablet Sidebar - Visible on md screens */}
@@ -208,71 +211,6 @@ const Layout = () => {
             />
           </>
         </nav>
-
-        {/* <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <NavItem
-            to="/profile"
-            icon={<FiSettings size={20} />}
-            text="Settings"
-            onClick={toggleMobileMenu}
-          />
-        </div> */}
-      </div>
-
-      {/* Mobile Sidebar - Visible on sm screens and down */}
-      <div
-        ref={mobileSidebarRef}
-        className={`md:hidden fixed inset-y-0 left-0 z-30 w-64 transform ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out bg-white dark:bg-gray-900 shadow-lg border-r border-gray-200 dark:border-gray-700`}
-      >
-        <div className="flex justify-between items-center h-20 p-4 border-b border-gray-200 dark:border-gray-700">
-          <img src={Logo} alt="MAI Logo" className="h-12" />
-          <button
-            onClick={toggleMobileMenu}
-            className="p-2 rounded-md text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <FiX className="h-5 w-5" />
-          </button>
-        </div>
-
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          <>
-            <NavItem
-              to="/dashboard"
-              icon={<FiHome size={20} />}
-              text="Home"
-              onClick={toggleMobileMenu}
-            />
-            <NavItem
-              to="/refearals"
-              icon={<FiUsers size={20} />}
-              text="Referrals"
-              onClick={toggleMobileMenu}
-            />
-            <NavItem
-              to="/notification"
-              icon={<FiBell size={20} />}
-              text="Notifications"
-              onClick={toggleMobileMenu}
-            />
-            <NavItem
-              to="/profile"
-              icon={<IoMdPerson size={20} />}
-              text="Profile"
-              onClick={toggleMobileMenu}
-            />
-          </>
-        </nav>
-
-        {/* <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <NavItem
-            to="/profile"
-            icon={<FiSettings size={20} />}
-            text="Settings"
-            onClick={toggleMobileMenu}
-          />
-        </div> */}
       </div>
 
       {/* Main Content Area */}
@@ -283,17 +221,15 @@ const Layout = () => {
             <div className="flex items-center">
               <button
                 onClick={toggleMobileMenu}
-                className="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                <FiMenu ref={mobileToggleRef} className="h-5 w-5" />
-              </button>
-              <button
-                onClick={toggleMobileMenu}
                 className="hidden md:block lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <FiMenu ref={tabletToggleRef} className="h-5 w-5" />
               </button>
-              <h1 className="ml-2 text-lg font-semibold text-gray-800 dark:text-white">
+              {/* Mobile Logo */}
+              <div className="md:hidden">
+                <img src={Logo} alt="MAI Logo" className="h-8" />
+              </div>
+              <h1 className="ml-2 text-lg font-semibold text-gray-800 dark:text-white hidden md:block">
                 Dashboard
               </h1>
             </div>
@@ -302,7 +238,7 @@ const Layout = () => {
               <button className="p-2 rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
                 <FiSearch className="h-5 w-5" />
               </button>
-              <Link to="/notification">
+              <Link to="/notification" className="hidden md:block">
                 <button className="p-2 cursor-pointer rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 relative">
                   <FiBell className="h-5 w-5" />
                   <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
@@ -338,7 +274,7 @@ const Layout = () => {
                     <NavLink
                       to="/profile"
                       onClick={() => setShowDropdown(false)}
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 md:hidden"
                     >
                       <FiUser className="mr-3" size={16} />
                       Profile
@@ -359,7 +295,7 @@ const Layout = () => {
 
         {/* Main Content */}
         <main
-          className={`flex-1 overflow-y-auto pt-16 transition-all duration-300 ${
+          className={`flex-1 overflow-y-auto pt-16 pb-16 md:pb-0 transition-all duration-300 ${
             mobileMenuOpen ? "md:ml-64" : "ml-0"
           }`}
         >
@@ -367,6 +303,32 @@ const Layout = () => {
             <Outlet />
           </div>
         </main>
+
+        {/* Mobile Bottom Navigation - Only visible on mobile */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg">
+          <div className="flex items-center justify-around h-16">
+            <BottomTabItem
+              to="/dashboard"
+              icon={<FiHome size={20} />}
+              text="Home"
+            />
+            <BottomTabItem
+              to="/refearals"
+              icon={<FiUsers size={20} />}
+              text="Referrals"
+            />
+            <BottomTabItem
+              to="/notification"
+              icon={<FiBell size={20} />}
+              text="Notifications"
+            />
+            <BottomTabItem
+              to="/profile"
+              icon={<IoMdPerson size={20} />}
+              text="Profile"
+            />
+          </div>
+        </nav>
       </div>
     </div>
   );
