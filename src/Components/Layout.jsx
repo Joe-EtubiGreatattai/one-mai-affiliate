@@ -123,9 +123,6 @@ const Layout = () => {
         <>
           <span className="mb-1">{icon}</span>
           <span className="text-xs font-medium">{text}</span>
-          {isActive && (
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-t-full"></div>
-          )}
         </>
       )}
     </NavLink>

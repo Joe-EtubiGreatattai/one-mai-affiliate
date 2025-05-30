@@ -47,16 +47,22 @@ const ProfileForm = ({
     }
   }, [selectedFile]);
 
-  const determineImageUrl = (url) => {
+  const determineImageUrl = async (url) => {
     if (!url) return;
 
-    // If it's already a full URL, use it directly
+    // If it's already a full URL, test it directly
     if (url.startsWith("http")) {
-      setAvatar(url);
-      return;
+      const isValid = await testImageUrl(url);
+      if (isValid) {
+        setAvatar(url);
+        return;
+      } else {
+        setImageError(true);
+        return;
+      }
     }
 
-    // Check both possible paths
+    // Build possible URLs
     const baseUrl = "https://api.joinonemai.com";
     const possibleUrls = [];
 
@@ -74,24 +80,41 @@ const ProfileForm = ({
         possibleUrls.push(`${baseUrl}/upload${url}`);
       }
     } else {
-      // If it's not a path, just use as is
-      setAvatar(url);
-      return;
+      // If it doesn't start with /, try adding different prefixes
+      possibleUrls.push(`${baseUrl}/uploads/${url}`);
+      possibleUrls.push(`${baseUrl}/upload/${url}`);
+      possibleUrls.push(`${baseUrl}/${url}`);
     }
 
-    // Try to find the first valid URL
+    // Test URLs sequentially
     for (const testUrl of possibleUrls) {
-      const img = new Image();
-      img.onload = () => {
+      const isValid = await testImageUrl(testUrl);
+      if (isValid) {
         setAvatar(testUrl);
         return;
-      };
-      img.onerror = () => {};
-      img.src = testUrl;
+      }
     }
 
     // If none worked, mark as error to show fallback
     setImageError(true);
+  };
+
+  const testImageUrl = (url) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      
+      // Set a timeout to avoid hanging on slow requests
+      const timeoutId = setTimeout(() => {
+        resolve(false);
+      }, 5000);
+      
+      img.addEventListener('load', () => clearTimeout(timeoutId));
+      img.addEventListener('error', () => clearTimeout(timeoutId));
+      
+      img.src = url;
+    });
   };
 
   const handleChange = (e) => {
@@ -166,7 +189,7 @@ const ProfileForm = ({
 
       {/* Profile Picture */}
       <div className="flex flex-col items-center mb-6">
-        <div className="relative group">
+        <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
           {!imageError && avatar ? (
             <img
               src={avatar}
@@ -178,7 +201,7 @@ const ProfileForm = ({
             <FaUserCircle className="h-24 w-24 text-gray-400 dark:text-gray-300" />
           )}
           <div
-            className={`absolute inset-0 rounded-full flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition ${
+            className={`absolute inset-0 rounded-full flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition cursor-pointer ${
               darkMode ? "text-white" : "text-white"
             }`}
           >
