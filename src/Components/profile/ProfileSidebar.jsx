@@ -43,7 +43,7 @@ const ProfileSidebar = ({
       title: "Others",
       items: [
         { type: "darkMode", label: "Dark Mode" },
-        { type: "faq", label: "FAQ" },
+       
         { type: "logout", label: "Logout" },
       ],
     },
