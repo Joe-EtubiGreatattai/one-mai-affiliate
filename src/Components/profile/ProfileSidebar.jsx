@@ -201,13 +201,7 @@ const ProfileSidebar = ({
 
       {/* Navigation Menu */}
       <nav className="space-y-6">
-        <div>
-          <img
-            src="/public/ref-friends.svg"
-            alt="ref"
-            className="w-full h-auto"
-          />
-        </div>
+      
         {menuItems.map((section) => (
           <div key={section.title}>
             <h3
