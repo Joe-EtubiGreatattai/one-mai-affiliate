@@ -1,6 +1,77 @@
 import React, { useState, useEffect } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiCheck, FiX } from "react-icons/fi";
+import { 
+  FiPlus, 
+  FiEdit2, 
+  FiTrash2, 
+  FiCheck, 
+  FiX, 
+  FiCreditCard,
+  FiMapPin,
+  FiCalendar,
+  FiUser,
+  FiHash,
+  FiGlobe
+} from "react-icons/fi";
 import useBankStore from "../../Store/useBankStore";
+
+// Enhanced Modal Component
+const Modal = ({ isOpen, onClose, children, size = "md", title }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const sizeClasses = {
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-lg",
+    xl: "max-w-xl"
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div 
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+      />
+      
+      <div className={`
+        relative bg-white rounded-2xl shadow-2xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden
+        transform transition-all duration-300 scale-100
+        border border-gray-200/50
+      `}>
+        {title && (
+          <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center">
+              <FiCreditCard className="mr-3 text-blue-600" size={24} />
+              {title}
+            </h2>
+            <button
+              onClick={onClose}
+              type="button"
+              className="p-2 hover:bg-white/50 rounded-full transition-colors duration-200"
+            >
+              <FiX size={20} className="text-gray-500" />
+            </button>
+          </div>
+        )}
+        
+        <div className={`${title ? "p-6" : "p-6"} max-h-[calc(90vh-80px)] overflow-y-auto`}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const BankDetailsForm = ({
   darkMode = false,
@@ -9,24 +80,20 @@ const BankDetailsForm = ({
   setSuccess = () => {},
 }) => {
   const { addBankAccount, error, clearError } = useBankStore();
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [bankDetails, setBankDetails] = useState({
     bankName: "",
     ibanNumber: "",
     beneficiaryName: "",
     swiftCode: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
 
-  // Show add form if no accounts exist
+  // Show add modal if no accounts exist
   useEffect(() => {
     if (Array.isArray(accounts) && accounts.length === 0) {
-      setShowAddForm(true);
-      setBankDetails({
-        bankName: "",
-        ibanNumber: "",
-        beneficiaryName: "",
-        swiftCode: "",
-      });
+      setShowAddModal(true);
     }
   }, [accounts]);
 
@@ -38,50 +105,92 @@ const BankDetailsForm = ({
     }
   }, [error, setError, clearError]);
 
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!bankDetails.bankName.trim()) {
+      errors.bankName = "Bank name is required";
+    }
+    
+    if (!bankDetails.beneficiaryName.trim()) {
+      errors.beneficiaryName = "Account holder name is required";
+    }
+    
+    if (!bankDetails.ibanNumber.trim()) {
+      errors.ibanNumber = "IBAN number is required";
+    } else if (bankDetails.ibanNumber.replace(/\s/g, "").length < 15) {
+      errors.ibanNumber = "IBAN number appears to be too short";
+    }
+    
+    if (bankDetails.swiftCode.trim() && bankDetails.swiftCode.trim().length < 8) {
+      errors.swiftCode = "SWIFT/BIC code must be at least 8 characters";
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBankDetails((prev) => ({
       ...prev,
       [name]: value,
     }));
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      setError("Please fix the validation errors below");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
     try {
       const payload = {
         bankName: bankDetails.bankName.trim(),
         accountHolderName: bankDetails.beneficiaryName.trim(),
-        iban: bankDetails.ibanNumber.replace(/\s/g, ""), // Remove spaces for API
-        bic: bankDetails.swiftCode.trim(),
+        iban: bankDetails.ibanNumber.replace(/\s/g, ""),
+        bic: bankDetails.swiftCode.trim() || undefined,
       };
 
-      if (!payload.bankName || !payload.accountHolderName || !payload.iban) {
-        setError("Bank name, account holder name and IBAN are required");
-        return;
-      }
-
+      console.log("Submitting bank account:", payload);
+      
       const result = await addBankAccount(payload);
-      setSuccess("Bank account added successfully!");
       
-      // Clear form and hide it after successful submission
-      setBankDetails({
-        bankName: "",
-        ibanNumber: "",
-        beneficiaryName: "",
-        swiftCode: "",
-      });
-      setShowAddForm(false);
-      
-      console.log("Added bank account:", result);
+      if (result) {
+        setSuccess("Bank account added successfully!");
+        
+        setBankDetails({
+          bankName: "",
+          ibanNumber: "",
+          beneficiaryName: "",
+          swiftCode: "",
+        });
+        setValidationErrors({});
+        setShowAddModal(false);
+        
+        console.log("Added bank account:", result);
+      }
     } catch (err) {
-      // Error handled by store
       console.error("Error adding bank account:", err);
+      setError(err.message || "Failed to add bank account. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const formatIban = (iban) => {
-    // Add spaces every 4 characters for display
     return iban.replace(/(.{4})/g, '$1 ').trim();
   };
 
@@ -96,341 +205,338 @@ const BankDetailsForm = ({
   const getStatusBadge = (account) => {
     if (account.isVerified) {
       return (
-        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
           <FiCheck className="w-3 h-3 mr-1" />
           Verified
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
         <FiX className="w-3 h-3 mr-1" />
         Pending
       </span>
     );
   };
 
+  const handleModalClose = () => {
+    if (accounts.length > 0) {
+      setShowAddModal(false);
+      setBankDetails({
+        bankName: "",
+        ibanNumber: "",
+        beneficiaryName: "",
+        swiftCode: "",
+      });
+      setValidationErrors({});
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Existing Accounts List */}
-      {accounts && accounts.length > 0 && (
-        <div className={`rounded-lg shadow-md ${darkMode ? "bg-gray-800" : "bg-white"}`}>
-          <div className="p-4 md:p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className={`text-lg md:text-xl font-medium ${darkMode ? "text-white" : "text-gray-800"}`}>
-                Bank Accounts ({accounts.length})
-              </h3>
-              <button
-                onClick={() => setShowAddForm(!showAddForm)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                  darkMode 
-                    ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
-                }`}
-              >
-                <FiPlus className="w-4 h-4 mr-2 inline" />
-                Add New Account
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {accounts.map((account, index) => (
-                <div
-                  key={account._id || index}
-                  className={`p-4 rounded-lg border transition-colors ${
-                    darkMode 
-                      ? "border-gray-600 bg-gray-700 hover:bg-gray-650" 
-                      : "border-gray-200 bg-gray-50 hover:bg-gray-100"
+    <div className="max-w-6xl mx-auto p-4 space-y-6">
+      {/* Add Bank Account Modal */}
+      <Modal 
+        isOpen={showAddModal} 
+        onClose={handleModalClose}
+        title="Add New Bank Account"
+        size="lg"
+      >
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-gray-800 mb-3">
+                Bank Name *
+              </label>
+              <div className="relative">
+                <FiCreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  name="bankName"
+                  value={bankDetails.bankName}
+                  onChange={handleInputChange}
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white ${
+                    validationErrors.bankName ? 'border-red-300' : 'border-gray-200'
                   }`}
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className={`font-semibold text-lg ${darkMode ? "text-white" : "text-gray-800"}`}>
-                          {account.bankName}
-                        </h4>
-                        <div className="flex items-center space-x-2">
-                          {getStatusBadge(account)}
-                          {account.isDefault && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              Default
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <span className={`font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                            Account Holder:
-                          </span>
-                          <p className={darkMode ? "text-white" : "text-gray-800"}>
-                            {account.accountHolderName}
-                          </p>
-                        </div>
-                        
-                        <div>
-                          <span className={`font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                            IBAN:
-                          </span>
-                          <p className={`font-mono ${darkMode ? "text-white" : "text-gray-800"}`}>
-                            {formatIban(account.iban)}
-                          </p>
-                        </div>
-                        
-                        {account.bic && (
-                          <div>
-                            <span className={`font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                              SWIFT/BIC:
-                            </span>
-                            <p className={`font-mono ${darkMode ? "text-white" : "text-gray-800"}`}>
-                              {account.bic}
-                            </p>
-                          </div>
-                        )}
-                        
-                        <div>
-                          <span className={`font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                            Currency:
-                          </span>
-                          <p className={darkMode ? "text-white" : "text-gray-800"}>
-                            {account.currency?.toUpperCase() || 'N/A'}
-                          </p>
-                        </div>
-                        
-                        <div>
-                          <span className={`font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                            Country:
-                          </span>
-                          <p className={darkMode ? "text-white" : "text-gray-800"}>
-                            {account.country || 'N/A'}
-                          </p>
-                        </div>
-                        
-                        <div>
-                          <span className={`font-medium ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                            Added:
-                          </span>
-                          <p className={darkMode ? "text-white" : "text-gray-800"}>
-                            {formatDate(account.createdAt)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action buttons - commented out for now since no delete/edit functionality specified */}
-                  {/* 
-                  <div className="flex justify-end space-x-2 pt-3 border-t border-gray-200 dark:border-gray-600">
-                    <button className="p-2 text-gray-500 hover:text-blue-600 transition">
-                      <FiEdit2 className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 text-gray-500 hover:text-red-600 transition">
-                      <FiTrash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  */}
-                </div>
-              ))}
+                  required
+                  placeholder="e.g. Zenith Bank"
+                />
+              </div>
+              {validationErrors.bankName && (
+                <p className="text-red-500 text-sm mt-1">{validationErrors.bankName}</p>
+              )}
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Add New Account Form */}
-      {showAddForm && (
-        <form
-          onSubmit={handleSubmit}
-          className={`p-4 md:p-6 rounded-lg shadow-md ${
-            darkMode ? "bg-gray-800" : "bg-white"
-          }`}
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h3
-              className={`text-lg md:text-xl font-medium ${
-                darkMode ? "text-white" : "text-gray-800"
-              }`}
-            >
-              Add New Bank Account
-            </h3>
-            {accounts.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowAddForm(false)}
-                className={`p-2 rounded-md transition ${
-                  darkMode 
-                    ? "text-gray-400 hover:text-white hover:bg-gray-700" 
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <FiX className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label
-                className={`block mb-2 text-sm md:text-base font-medium ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Bank Name*
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-gray-800 mb-3">
+                IBAN Number *
               </label>
-              <input
-                type="text"
-                name="bankName"
-                value={bankDetails.bankName}
-                onChange={handleInputChange}
-                className={`w-full px-3 py-2 md:px-4 md:py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white"
-                    : "bg-white border-gray-300 text-gray-800"
-                }`}
-                required
-                placeholder="e.g. Zenith Bank"
-              />
+              <div className="relative">
+                <FiHash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  name="ibanNumber"
+                  value={bankDetails.ibanNumber}
+                  onChange={(e) => {
+                    const value = e.target.value
+                      .toUpperCase()
+                      .replace(/[^A-Z0-9]/g, "");
+                    let formattedValue = "";
+                    for (let i = 0; i < value.length; i++) {
+                      if (i > 0 && i % 4 === 0) formattedValue += " ";
+                      formattedValue += value[i];
+                    }
+                    e.target.value = formattedValue;
+                    handleInputChange(e);
+                  }}
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white font-mono ${
+                    validationErrors.ibanNumber ? 'border-red-300' : 'border-gray-200'
+                  }`}
+                  required
+                  placeholder="DE89 3704 0044 0532 0130 00"
+                  maxLength="27"
+                />
+              </div>
+              {validationErrors.ibanNumber && (
+                <p className="text-red-500 text-sm mt-1">{validationErrors.ibanNumber}</p>
+              )}
             </div>
 
-            <div>
-              <label
-                className={`block mb-2 text-sm md:text-base font-medium ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                IBAN Number*
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-gray-800 mb-3">
+                Account Holder Name *
               </label>
-              <input
-                type="text"
-                name="ibanNumber"
-                value={bankDetails.ibanNumber}
-                onChange={(e) => {
-                  // Format IBAN with spaces for better readability
-                  const value = e.target.value
-                    .toUpperCase()
-                    .replace(/[^A-Z0-9]/g, "");
-                  let formattedValue = "";
-                  for (let i = 0; i < value.length; i++) {
-                    if (i > 0 && i % 4 === 0) formattedValue += " ";
-                    formattedValue += value[i];
-                  }
-                  e.target.value = formattedValue;
-                  handleInputChange(e);
-                }}
-                className={`w-full px-3 py-2 md:px-4 md:py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white"
-                    : "bg-white border-gray-300 text-gray-800"
-                }`}
-                required
-                placeholder="DE89 3704 0044 0532 0130 00"
-                pattern="[A-Z]{2}\d{2} ?\d{4} ?\d{4} ?\d{4} ?\d{4} ?[\d]{0,2}"
-                maxLength="27"
-              />
+              <div className="relative">
+                <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  name="beneficiaryName"
+                  value={bankDetails.beneficiaryName}
+                  onChange={handleInputChange}
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white ${
+                    validationErrors.beneficiaryName ? 'border-red-300' : 'border-gray-200'
+                  }`}
+                  required
+                  placeholder="Edi Mark Ibu"
+                />
+              </div>
+              {validationErrors.beneficiaryName && (
+                <p className="text-red-500 text-sm mt-1">{validationErrors.beneficiaryName}</p>
+              )}
             </div>
 
-            <div>
-              <label
-                className={`block mb-2 text-sm md:text-base font-medium ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Account Holder Name*
-              </label>
-              <input
-                type="text"
-                name="beneficiaryName"
-                value={bankDetails.beneficiaryName}
-                onChange={handleInputChange}
-                className={`w-full px-3 py-2 md:px-4 md:py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white"
-                    : "bg-white border-gray-300 text-gray-800"
-                }`}
-                required
-                placeholder="Edi Mark Ibu"
-              />
-            </div>
-
-            <div>
-              <label
-                className={`block mb-2 text-sm md:text-base font-medium ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-gray-800 mb-3">
                 SWIFT/BIC Code
               </label>
-              <input
-                type="text"
-                name="swiftCode"
-                value={bankDetails.swiftCode}
-                onChange={(e) => {
-                  // Auto-uppercase and format SWIFT/BIC code
-                  e.target.value = e.target.value
-                    .toUpperCase()
-                    .replace(/[^A-Z0-9]/g, "");
-                  handleInputChange(e);
-                }}
-                className={`w-full px-3 py-2 md:px-4 md:py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white"
-                    : "bg-white border-gray-300 text-gray-800"
-                }`}
-                placeholder="BARCGB22"
-                pattern="[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?"
-                maxLength="11"
-              />
+              <div className="relative">
+                <FiGlobe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  name="swiftCode"
+                  value={bankDetails.swiftCode}
+                  onChange={(e) => {
+                    e.target.value = e.target.value
+                      .toUpperCase()
+                      .replace(/[^A-Z0-9]/g, "");
+                    handleInputChange(e);
+                  }}
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white font-mono ${
+                    validationErrors.swiftCode ? 'border-red-300' : 'border-gray-200'
+                  }`}
+                  placeholder="BARCGB22"
+                  maxLength="11"
+                />
+              </div>
+              {validationErrors.swiftCode && (
+                <p className="text-red-500 text-sm mt-1">{validationErrors.swiftCode}</p>
+              )}
+              <p className="text-xs text-gray-500 mt-2">Optional - Used for international transfers</p>
             </div>
           </div>
 
-          <div className="flex space-x-3 mt-6">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
             <button
               type="submit"
-              className={`flex-1 py-2 md:py-3 px-4 rounded-md ${
-                darkMode
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-blue-600 hover:bg-blue-700"
-              } text-white font-medium flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                darkMode ? "focus:ring-offset-gray-800" : "focus:ring-offset-white"
-              } transition`}
+              disabled={isSubmitting}
+              className="flex-1 py-3 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              <FiPlus className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-              <span>Add Bank Account</span>
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <FiPlus className="mr-2 h-4 w-4" />
+                  Add Bank Account
+                </>
+              )}
             </button>
             
             {accounts.length > 0 && (
               <button
                 type="button"
-                onClick={() => setShowAddForm(false)}
-                className={`px-6 py-2 md:py-3 rounded-md border font-medium transition ${
-                  darkMode
-                    ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-                    : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                }`}
+                onClick={handleModalClose}
+                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-semibold transition-all duration-200"
               >
                 Cancel
               </button>
             )}
           </div>
         </form>
-      )}
+      </Modal>
 
-      {/* Empty State */}
-      {(!accounts || accounts.length === 0) && !showAddForm && (
-        <div
-          className={`p-8 rounded-lg text-center ${
-            darkMode ? "bg-gray-800" : "bg-gray-100"
-          }`}
-        >
-          <p className={`mb-4 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
-            No bank accounts found. Add your first bank account to get started.
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            Bank Accounts
+          </h1>
+          <p className="text-gray-600">
+            Manage your bank accounts for withdrawals and payments
+          </p>
+        </div>
+        
+        {accounts && accounts.length > 0 && (
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
+          >
+            <FiPlus className="mr-2" size={18} />
+            Add Account
+          </button>
+        )}
+      </div>
+
+      {/* Bank Accounts Grid */}
+      {accounts && accounts.length > 0 ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {accounts.map((account, index) => (
+            <div
+              key={account._id || index}
+              className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 group"
+            >
+              {/* Card Header */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-100">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center">
+                    <div className="bg-blue-100 p-3 rounded-xl mr-4">
+                      <FiCreditCard className="text-blue-600" size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">
+                        {account.bankName}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {account.accountHolderName}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col items-end gap-2">
+                    {getStatusBadge(account)}
+                    {account.isDefault && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                        Default
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Card Content */}
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <div className="flex items-center mb-2">
+                      <FiHash className="text-gray-400 mr-2" size={16} />
+                      <span className="text-sm font-bold text-gray-700">IBAN</span>
+                    </div>
+                    <p className="font-mono text-lg font-semibold text-gray-900 break-all">
+                      {formatIban(account.iban)}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {account.bic && (
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <FiGlobe className="text-gray-400 mr-2" size={14} />
+                          <span className="text-sm font-bold text-gray-700">SWIFT/BIC</span>
+                        </div>
+                        <p className="font-mono text-sm font-semibold text-gray-900">
+                          {account.bic}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <FiMapPin className="text-gray-400 mr-2" size={14} />
+                        <span className="text-sm font-bold text-gray-700">Currency</span>
+                      </div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {account.currency?.toUpperCase() || 'N/A'}
+                      </p>
+                    </div>
+                    
+                    {account.country && (
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <FiMapPin className="text-gray-400 mr-2" size={14} />
+                          <span className="text-sm font-bold text-gray-700">Country</span>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {account.country}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <FiCalendar className="text-gray-400 mr-2" size={14} />
+                        <span className="text-sm font-bold text-gray-700">Added</span>
+                      </div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {formatDate(account.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons - Uncomment when needed */}
+                {/* 
+                <div className="flex justify-end space-x-3 pt-6 mt-6 border-t border-gray-100">
+                  <button className="p-3 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200">
+                    <FiEdit2 size={18} />
+                  </button>
+                  <button className="p-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
+                    <FiTrash2 size={18} />
+                  </button>
+                </div>
+                */}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Empty State */
+        <div className="text-center py-16">
+          <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+            <FiCreditCard className="text-gray-400" size={40} />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            No Bank Accounts Yet
+          </h3>
+          <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            Add your first bank account to start receiving payments and managing your finances.
           </p>
           <button
-            onClick={() => setShowAddForm(true)}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition"
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
           >
-            <FiPlus className="mr-2 h-4 w-4 inline" />
-            Add Bank Account
+            <FiPlus className="mr-2" size={20} />
+            Add Your First Bank Account
           </button>
         </div>
       )}
