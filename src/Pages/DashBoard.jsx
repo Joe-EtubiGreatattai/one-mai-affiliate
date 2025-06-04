@@ -29,7 +29,7 @@ function DashBoard({ welcomeOnly = undefined }) {
 
   // Derived values from referral data
   const referralStats = referralData?.affiliateStats || {};
-  const referralCode = referralData?.affiliateStats?.referralCode || "";
+  const referralCode = referralStats?.referralCode || "";
   const totalReferrals = referralStats?.totalReferrals || 0;
   const activeReferrals = referralStats?.activeReferrals || 0;
 
@@ -95,7 +95,7 @@ function DashBoard({ welcomeOnly = undefined }) {
       currency: currency,
     }).format(amount || 0);
   };
-  console.log("referralData", referralData);
+
   if (loading) {
     return (
       <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
@@ -136,90 +136,52 @@ function DashBoard({ welcomeOnly = undefined }) {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto ">
-      {/* Current Balance Card */}
-      <div className="bg-black/90 text-white p-4 sm:p-6 rounded-lg shadow-md mb-6">
-        <div className="flex justify-between items-start">
+    <div className="w-full max-w-md mx-auto">
+      {/* Main Dashboard Card */}
+      <div className="bg-gray-800 text-white p-6 rounded-2xl shadow-lg">
+        {/* Current Balance Section */}
+        <div className="flex justify-between items-start mb-8">
           <div>
-            <h3 className="text-base sm:text-lg font-medium mb-1 sm:mb-2">
+            <h3 className="text-gray-300 text-sm font-medium mb-2">
               Current Balance
             </h3>
-            <p className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
-              {balanceVisible ? formatCurrency(balance) : "••••••"}
+            <p className="text-4xl font-bold">
+              {balanceVisible ? formatCurrency(balance) : "****"}
             </p>
           </div>
           <button
             onClick={toggleBalanceVisibility}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-white transition-colors mt-1"
             aria-label={balanceVisible ? "Hide balance" : "Show balance"}
           >
             {balanceVisible ? <FiEyeOff size={20} /> : <FiEye size={20} />}
           </button>
         </div>
 
-        <div className="mb-2 sm:mb-4">
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-gray-300 text-sm sm:text-base">
-              Profile Completion
-            </span>
-            <span className="text-white text-sm sm:text-base">
-              {profileCompletion}%
-            </span>
+        {/* Bottom Section - Referrals and Code */}
+        <div className="flex justify-between items-end">
+          <div>
+            <h4 className="text-gray-300 text-sm font-medium mb-1">
+              Total Referrals
+            </h4>
+            <p className="text-2xl font-bold">{totalReferrals}</p>
           </div>
-          <div className="w-full bg-gray-700 rounded-full h-2 mb-1">
-            <div
-              className="bg-blue-400 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${profileCompletion}%` }}
-            />
+          
+          <div className="text-right">
+            <div className="text-gray-300 text-sm font-medium mb-2">
+              {referralCode || "SAVEWITHTIJANI"}
+            </div>
+            <button
+              onClick={copyReferralCode}
+              className="flex items-center text-gray-300 hover:text-white transition-colors text-sm"
+              aria-label="Copy referral code"
+            >
+              <FiCopy size={16} className="mr-2" />
+              Copy
+            </button>
           </div>
-          <p className="text-gray-300 text-xs sm:text-sm">
-            {bankDetails?.data
-              ? "Profile complete!"
-              : "Please setup bank details to complete your profile"}
-          </p>
         </div>
       </div>
-      {/* <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <div className="sm:border-r sm:border-gray-200 sm:pr-4">
-            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-1 sm:mb-2">
-              Total Referrals
-            </h3>
-            <p className="text-2xl sm:text-3xl font-bold text-blue-600">
-              {totalReferrals}
-            </p>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              {activeReferrals} active
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-1 sm:mb-2">
-              Your Referral Code
-            </h3>
-            <div className="flex items-center">
-              <p className="text-base sm:text-xl font-mono font-bold bg-gray-100 px-3 py-1 rounded mr-2">
-                {referralCode || "N/A"}
-              </p>
-              {referralCode && (
-                <button
-                  onClick={copyReferralCode}
-                  className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                  title="Copy to clipboard"
-                  aria-label="Copy referral code"
-                >
-                  <FiCopy size={18} />
-                </button>
-              )}
-            </div>
-            {copied && (
-              <span className="text-xs text-green-600 mt-1 inline-block">
-                Copied to clipboard!
-              </span>
-            )}
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }

@@ -22,14 +22,14 @@ const useNotificationStore = create((set, get) => ({
     set({ loading: true, error: null });
 
     try {
-      const response = await axios.get(`api/user/notifications`, {
+      const response = await axios.get(`api/notification/fetch`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
 
       // Ensure we always set an array, even if response.data is null/undefined
-      set({ notifications:response.data.data || response.data, loading: false });
+      set({ notifications: response.data.data || response.data, loading: false });
       return response.data;
 
     } catch (error) {
