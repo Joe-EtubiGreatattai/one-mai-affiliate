@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "../Api/axios";
 
-const useBankStore = create((set) => ({
+const useBankStore = create((set, get) => ({
   // Initial state
   accounts: [],
   withdrawals: [],
@@ -159,14 +159,14 @@ const useBankStore = create((set) => ({
   fetchBankDetails: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get("/api/wallet/bankDetails", {
+      const response = await axios.get("/api/bank/bank-accounts", {
         withCredentials: true,
       });
 
       if (response.data.success && response.data.data.length === 0) {
         set({
           bankDetails: [],
-          message: response.data.message,
+          message: response.data.message || "No bank accounts found",
           loading: false,
         });
       } else {
