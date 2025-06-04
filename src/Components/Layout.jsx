@@ -232,9 +232,7 @@ const Layout = () => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button className="p-2 rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-                <FiSearch className="h-5 w-5" />
-              </button>
+      
               <Link to="/notification" className="hidden md:block">
                 <button className="p-2 cursor-pointer rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 relative">
                   <FiBell className="h-5 w-5" />
