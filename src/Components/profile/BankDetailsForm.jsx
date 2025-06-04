@@ -226,7 +226,7 @@ const BankDetailsForm = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-2 sm:p-4 space-y-4 sm:space-y-6">
+    <div className="w-full sm:max-w-6xl sm:mx-auto p-2 sm:p-4 space-y-4 sm:space-y-6">
       {/* Add Bank Account Modal */}
       <Modal 
         isOpen={showAddModal} 
