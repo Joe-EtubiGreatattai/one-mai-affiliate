@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FiUpload } from "react-icons/fi";
+import { 
+  FiUpload, 
+  FiEdit3, 
+  FiSave, 
+  FiX, 
+  FiUser, 
+  FiPhone, 
+  FiMail,
+  FiCamera,
+  FiCheck
+} from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 
 const ProfileForm = ({
@@ -9,6 +19,7 @@ const ProfileForm = ({
   setError,
   setSuccess,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -148,6 +159,34 @@ const ProfileForm = ({
     reader.readAsDataURL(file);
   };
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setError(null);
+    setSuccess(null);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setSelectedFile(null);
+    setFileError("");
+    setImageError(false);
+    
+    // Reset form data to original user data
+    if (user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        phoneNumber: user.phoneNumber || "",
+      });
+      
+      if (user.image) {
+        determineImageUrl(user.image);
+      } else {
+        setAvatar("");
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -167,6 +206,7 @@ const ProfileForm = ({
       await updateProfile(data);
       setSuccess("Profile updated successfully!");
       setSelectedFile(null);
+      setIsEditing(false);
     } catch (error) {
       setError(error.message || "Failed to update profile");
     } finally {
@@ -174,189 +214,424 @@ const ProfileForm = ({
     }
   };
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-lg mx-auto space-y-4 px-4 py-6"
-    >
-      <h2
-        className={`text-center text-xl md:text-2xl font-bold mb-4 ${
-          darkMode ? "text-white" : "text-gray-800"
-        }`}
-      >
-        Profile Information
-      </h2>
+  const ProfileAvatar = ({ size = "large", showEditOverlay = false }) => (
+    <div className={`relative group ${showEditOverlay ? 'cursor-pointer' : ''}`} 
+         onClick={showEditOverlay ? () => fileInputRef.current?.click() : undefined}>
+      {!imageError && avatar ? (
+        <img
+          src={avatar}
+          alt="Profile"
+          className={`${
+            size === "large" ? "h-24 w-24 sm:h-32 sm:w-32" : "h-16 w-16 sm:h-24 sm:w-24"
+          } rounded-full object-cover border-4 ${
+            darkMode ? "border-gray-600" : "border-white"
+          } shadow-xl transition-transform duration-300 ${
+            showEditOverlay ? "group-hover:scale-105" : ""
+          }`}
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <FaUserCircle className={`${
+          size === "large" ? "h-24 w-24 sm:h-32 sm:w-32" : "h-16 w-16 sm:h-24 sm:w-24"
+        } ${darkMode ? "text-gray-400" : "text-gray-300"} shadow-lg`} />
+      )}
+      
+      {showEditOverlay && (
+        <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <FiCamera className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+        </div>
+      )}
+    </div>
+  );
 
-      {/* Profile Picture */}
-      <div className="flex flex-col items-center mb-6">
-        <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-          {!imageError && avatar ? (
-            <img
-              src={avatar}
-              alt="Profile"
-              className="h-24 w-24 rounded-full object-cover border-2 border-blue-100 dark:border-gray-600"
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <FaUserCircle className="h-24 w-24 text-gray-400 dark:text-gray-300" />
-          )}
-          <div
-            className={`absolute inset-0 rounded-full flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition cursor-pointer ${
-              darkMode ? "text-white" : "text-white"
-            }`}
-          >
-            <FiUpload className="h-6 w-6" />
+  if (!isEditing) {
+    // Profile View Mode
+    return (
+      <div className="w-full">
+        {/* Header Card */}
+        <div className={`${
+          darkMode 
+            ? "bg-gray-800 border-b border-gray-700" 
+            : "bg-white border-b border-gray-200"
+        } px-4 py-6 sm:px-6 sm:py-8`}>
+          
+          <div className="text-center">
+            {/* Profile Avatar */}
+            <div className="flex justify-center mb-4 sm:mb-6">
+              <ProfileAvatar size="large" />
+            </div>
+            
+            {/* User Name */}
+            <h1 className={`text-xl sm:text-3xl font-bold mb-2 ${
+              darkMode ? "text-white" : "text-gray-800"
+            }`}>
+              {formData.firstName} {formData.lastName}
+            </h1>
+            
+            {/* User Email */}
+            <p className={`text-sm sm:text-lg ${
+              darkMode ? "text-gray-300" : "text-gray-600"
+            } mb-4 sm:mb-6`}>
+              {user?.email}
+            </p>
+            
+            {/* Edit Button */}
+            <button
+              onClick={handleEdit}
+              className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 text-white rounded-lg font-medium text-sm sm:text-base shadow-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300"
+            >
+              <FiEdit3 className="mr-2 h-4 w-4" />
+              Edit Profile
+            </button>
           </div>
         </div>
 
-        <div className="flex flex-col items-center">
-          <label
-            className={`cursor-pointer ${
-              darkMode
-                ? "text-blue-400 hover:text-blue-300"
-                : "text-blue-600 hover:text-blue-800"
-            } text-sm md:text-base flex items-center transition`}
-          >
-            <FiUpload className="mr-1 h-4 w-4" />
-            <span>Change Photo</span>
-            <input
-              type="file"
-              className="hidden"
-              accept="image/jpeg, image/png, image/jpg"
-              onChange={handleFileChange}
-              ref={fileInputRef}
-              key={selectedFile ? "file-selected" : "file-empty"}
-            />
-          </label>
-          {fileError && (
-            <p className="mt-1 text-xs text-red-500">{fileError}</p>
-          )}
+        {/* Profile Details Cards */}
+        <div className="space-y-1 sm:space-y-6 sm:p-6">
+          {/* Personal Information Card */}
+          <div className={`${
+            darkMode 
+              ? "bg-gray-800 border-b border-gray-700" 
+              : "bg-white border-b border-gray-200"
+          } px-4 py-4 sm:rounded-lg sm:shadow-lg sm:border`}>
+            <h2 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center ${
+              darkMode ? "text-white" : "text-gray-800"
+            }`}>
+              <FiUser className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+              Personal Information
+            </h2>
+            
+            <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0">
+              {/* First Name */}
+              <div className="space-y-1 sm:space-y-2">
+                <label className={`text-xs sm:text-sm font-medium ${
+                  darkMode ? "text-gray-400" : "text-gray-500"
+                }`}>
+                  First Name
+                </label>
+                <p className={`text-sm sm:text-lg font-semibold ${
+                  darkMode ? "text-white" : "text-gray-900"
+                }`}>
+                  {formData.firstName || "Not provided"}
+                </p>
+              </div>
+              
+              {/* Last Name */}
+              <div className="space-y-1 sm:space-y-2">
+                <label className={`text-xs sm:text-sm font-medium ${
+                  darkMode ? "text-gray-400" : "text-gray-500"
+                }`}>
+                  Last Name
+                </label>
+                <p className={`text-sm sm:text-lg font-semibold ${
+                  darkMode ? "text-white" : "text-gray-900"
+                }`}>
+                  {formData.lastName || "Not provided"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Information Card */}
+          <div className={`${
+            darkMode 
+              ? "bg-gray-800" 
+              : "bg-white"
+          } px-4 py-4 sm:rounded-lg sm:shadow-lg sm:border ${
+            darkMode ? "sm:border-gray-700" : "sm:border-gray-200"
+          }`}>
+            <h2 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center ${
+              darkMode ? "text-white" : "text-gray-800"
+            }`}>
+              <FiPhone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+              Contact Information
+            </h2>
+            
+            <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0">
+              {/* Email */}
+              <div className="space-y-1 sm:space-y-2">
+                <label className={`text-xs sm:text-sm font-medium ${
+                  darkMode ? "text-gray-400" : "text-gray-500"
+                } flex items-center`}>
+                  <FiMail className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                  Email Address
+                </label>
+                <p className={`text-sm sm:text-lg font-semibold ${
+                  darkMode ? "text-white" : "text-gray-900"
+                }`}>
+                  {user?.email || "Not provided"}
+                </p>
+              </div>
+              
+              {/* Phone */}
+              <div className="space-y-1 sm:space-y-2">
+                <label className={`text-xs sm:text-sm font-medium ${
+                  darkMode ? "text-gray-400" : "text-gray-500"
+                } flex items-center`}>
+                  <FiPhone className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                  Phone Number
+                </label>
+                <p className={`text-sm sm:text-lg font-semibold ${
+                  darkMode ? "text-white" : "text-gray-900"
+                }`}>
+                  {formData.phoneNumber || "Not provided"}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    );
+  }
 
-      {/* First Name */}
-      <div>
-        <label
-          className={`block mb-2 text-sm md:text-base font-medium ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
-        >
-          First Name*
-        </label>
-        <input
-          type="text"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleChange}
-          className={`w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-            darkMode
-              ? "bg-gray-700 border-gray-600 text-white"
-              : "bg-white border-gray-300"
-          }`}
-          required
-          minLength="2"
-          maxLength="50"
-        />
-      </div>
-
-      {/* Last Name */}
-      <div>
-        <label
-          className={`block mb-2 text-sm md:text-base font-medium ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
-        >
-          Last Name*
-        </label>
-        <input
-          type="text"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleChange}
-          className={`w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-            darkMode
-              ? "bg-gray-700 border-gray-600 text-white"
-              : "bg-white border-gray-300"
-          }`}
-          required
-          minLength="2"
-          maxLength="50"
-        />
-      </div>
-
-      {/* Phone Number */}
-      <div>
-        <label
-          className={`block mb-2 text-sm md:text-base font-medium ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
-        >
-          Phone Number*
-        </label>
-        <input
-          type="tel"
-          name="phoneNumber"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          className={`w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-            darkMode
-              ? "bg-gray-700 border-gray-600 text-white"
-              : "bg-white border-gray-300"
-          }`}
-          pattern="^[\d\s\+\-\(\)]{10,15}$"
-          title="10-15 digits with optional + - () symbols"
-          required
-        />
-        <p
-          className={`mt-1 text-xs ${
-            darkMode ? "text-gray-400" : "text-gray-500"
-          }`}
-        >
-          Format: 123-456-7890 or +1 (123) 456-7890
+  // Edit Mode Form
+  return (
+    <div className="w-full">
+      {/* Edit Header */}
+      <div className={`${
+        darkMode 
+          ? "bg-gray-800 border-b border-gray-700" 
+          : "bg-white border-b border-gray-200"
+      } px-4 py-4 sm:px-6 sm:py-6`}>
+        <div className="flex items-center justify-between">
+          <h1 className={`text-lg sm:text-2xl font-bold ${
+            darkMode ? "text-white" : "text-gray-800"
+          }`}>
+            Edit Profile
+          </h1>
+          <button
+            onClick={handleCancel}
+            className={`p-2 rounded-lg transition-colors ${
+              darkMode 
+                ? "hover:bg-gray-700 text-gray-400 hover:text-white" 
+                : "hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <FiX className="h-5 w-5" />
+          </button>
+        </div>
+        
+        <p className={`text-xs sm:text-sm mt-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+          Update your personal information and profile picture
         </p>
       </div>
 
-      {/* Save Button */}
-      <button
-        type="submit"
-        className={`w-full mt-6 py-3 px-4 rounded-lg font-medium shadow transition flex items-center justify-center ${
-          darkMode
-            ? "bg-blue-600 hover:bg-blue-700 text-white"
-            : "bg-blue-600 hover:bg-blue-700 text-white"
-        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-          darkMode ? "focus:ring-offset-gray-800" : "focus:ring-offset-white"
-        } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
-        disabled={loading}
-      >
-        {loading ? (
-          <>
-            <svg
-              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            Saving...
-          </>
-        ) : (
-          "Save Changes"
-        )}
-      </button>
-    </form>
+      <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-8 sm:p-6">
+        {/* Profile Picture Section */}
+        <div className={`${
+          darkMode 
+            ? "bg-gray-800 border-b border-gray-700" 
+            : "bg-white border-b border-gray-200"
+        } px-4 py-4 sm:rounded-lg sm:shadow-lg sm:border`}>
+          <h2 className={`text-base sm:text-lg font-semibold mb-4 sm:mb-6 ${
+            darkMode ? "text-white" : "text-gray-800"
+          }`}>
+            Profile Picture
+          </h2>
+          
+          <div className="flex flex-col items-center space-y-3 sm:space-y-4">
+            <ProfileAvatar showEditOverlay={true} />
+            
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className={`inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                  darkMode
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
+              >
+                <FiUpload className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                Change Photo
+              </button>
+              
+              <input
+                type="file"
+                className="hidden"
+                accept="image/jpeg, image/png, image/jpg"
+                onChange={handleFileChange}
+                ref={fileInputRef}
+                key={selectedFile ? "file-selected" : "file-empty"}
+              />
+              
+              <p className={`mt-2 text-xs ${
+                darkMode ? "text-gray-400" : "text-gray-500"
+              }`}>
+                JPG, JPEG or PNG. Max size 2MB.
+              </p>
+              
+              {fileError && (
+                <p className="mt-2 text-xs sm:text-sm text-red-500">{fileError}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Personal Information Section */}
+        <div className={`${
+          darkMode 
+            ? "bg-gray-800 border-b border-gray-700" 
+            : "bg-white border-b border-gray-200"
+        } px-4 py-4 sm:rounded-lg sm:shadow-lg sm:border`}>
+          <h2 className={`text-base sm:text-lg font-semibold mb-4 sm:mb-6 ${
+            darkMode ? "text-white" : "text-gray-800"
+          }`}>
+            Personal Information
+          </h2>
+          
+          <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0">
+            {/* First Name */}
+            <div>
+              <label className={`block mb-1 sm:mb-2 text-xs sm:text-sm font-medium ${
+                darkMode ? "text-gray-300" : "text-gray-700"
+              }`}>
+                First Name *
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                  darkMode
+                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500"
+                }`}
+                placeholder="Enter your first name"
+                required
+                minLength="2"
+                maxLength="50"
+              />
+            </div>
+
+            {/* Last Name */}
+            <div>
+              <label className={`block mb-1 sm:mb-2 text-xs sm:text-sm font-medium ${
+                darkMode ? "text-gray-300" : "text-gray-700"
+              }`}>
+                Last Name *
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                  darkMode
+                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500"
+                }`}
+                placeholder="Enter your last name"
+                required
+                minLength="2"
+                maxLength="50"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Information Section */}
+        <div className={`${
+          darkMode 
+            ? "bg-gray-800" 
+            : "bg-white"
+        } px-4 py-4 sm:rounded-lg sm:shadow-lg sm:border ${
+          darkMode ? "sm:border-gray-700" : "sm:border-gray-200"
+        }`}>
+          <h2 className={`text-base sm:text-lg font-semibold mb-4 sm:mb-6 ${
+            darkMode ? "text-white" : "text-gray-800"
+          }`}>
+            Contact Information
+          </h2>
+          
+          {/* Phone Number */}
+          <div>
+            <label className={`block mb-1 sm:mb-2 text-xs sm:text-sm font-medium ${
+              darkMode ? "text-gray-300" : "text-gray-700"
+            }`}>
+              Phone Number *
+            </label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                darkMode
+                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500"
+              }`}
+              placeholder="Enter your phone number"
+              pattern="^[\d\s\+\-\(\)]{10,15}$"
+              title="10-15 digits with optional + - () symbols"
+              required
+            />
+            <p className={`mt-1 sm:mt-2 text-xs ${
+              darkMode ? "text-gray-400" : "text-gray-500"
+            }`}>
+              Format: 123-456-7890 or +1 (123) 456-7890
+            </p>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 sm:gap-4 px-4 py-4 sm:px-0 sm:py-0">
+          <button
+            type="button"
+            onClick={handleCancel}
+            className={`flex-1 py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-medium text-sm sm:text-base transition-colors ${
+              darkMode
+                ? "bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600"
+                : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300"
+            }`}
+          >
+            Cancel
+          </button>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className={`flex-1 py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-medium text-sm sm:text-base text-white transition-all transform ${
+              loading 
+                ? "opacity-70 cursor-not-allowed" 
+                : "hover:scale-105 shadow-lg hover:shadow-xl"
+            } bg-blue-600 hover:bg-blue-700 flex items-center justify-center`}
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <span className="text-xs sm:text-base">Saving...</span>
+              </>
+            ) : (
+              <>
+                <FiSave className="mr-1 sm:mr-2 h-4 w-4" />
+                Save
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

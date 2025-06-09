@@ -5,6 +5,9 @@ import {
   FiArrowDown,
   FiArrowUp,
   FiPlus,
+  FiCreditCard,
+  FiTrendingUp,
+  FiRefreshCw,
 } from "react-icons/fi";
 
 const WalletOverview = ({
@@ -20,190 +23,240 @@ const WalletOverview = ({
   setShowCardModal,
 }) => {
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* Balance Card */}
-      <div
-        className={`p-4 md:p-6 rounded-lg shadow-md ${
-          darkMode ? "bg-gray-800" : "bg-blue-50"
-        }`}
-      >
-        <div className="flex justify-between items-center mb-4">
-          <p
-            className={`text-sm md:text-base ${
-              darkMode ? "text-gray-300" : "text-blue-800"
-            }`}
-          >
-            Available Balance
-          </p>
-          <button
-            onClick={() => setBalanceVisible(!balanceVisible)}
-            className={`p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              darkMode ? "hover:bg-gray-700" : "hover:bg-blue-100"
-            }`}
-            aria-label={balanceVisible ? "Hide balance" : "Show balance"}
-          >
-            {balanceVisible ? (
-              <FiEyeOff
-                className={`h-5 w-5 ${
-                  darkMode ? "text-gray-300" : "text-blue-600"
-                }`}
-              />
-            ) : (
-              <FiEye
-                className={`h-5 w-5 ${
-                  darkMode ? "text-gray-300" : "text-blue-600"
-                }`}
-              />
-            )}
-          </button>
+    <div className="space-y-6 md:space-y-8">
+      {/* Premium Bank Card */}
+      <div className="relative">
+        <div
+          className={`relative p-6 md:p-8 rounded-2xl overflow-hidden ${
+            darkMode
+              ? "bg-gradient-to-br from-slate-800 via-slate-900 to-black"
+              : "bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800"
+          } shadow-2xl`}
+        >
+          {/* Card Background Pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-4 right-4 w-32 h-32 rounded-full bg-white/20 blur-xl"></div>
+            <div className="absolute bottom-4 left-4 w-24 h-24 rounded-full bg-white/10 blur-lg"></div>
+          </div>
+          
+          {/* Card Content */}
+          <div className="relative z-10">
+            {/* Card Header */}
+            <div className="flex justify-between items-start mb-6 md:mb-8">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <FiCreditCard className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-white/80 text-sm font-medium">Digital Wallet</p>
+                  <p className="text-white text-lg font-bold">Premium Account</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setBalanceVisible(!balanceVisible)}
+                className="p-2 rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                aria-label={balanceVisible ? "Hide balance" : "Show balance"}
+              >
+                {balanceVisible ? (
+                  <FiEyeOff className="h-5 w-5 text-white" />
+                ) : (
+                  <FiEye className="h-5 w-5 text-white" />
+                )}
+              </button>
+            </div>
+
+            {/* Balance Display */}
+            <div className="mb-8">
+              <p className="text-white/70 text-sm md:text-base mb-2">Available Balance</p>
+              <p className="text-white text-4xl md:text-5xl font-bold tracking-tight">
+                {balanceVisible ? formatCurrency(balance) : "••••••"}
+              </p>
+            </div>
+
+            {/* Card Number Style Decoration */}
+            <div className="flex justify-between items-end">
+              <div className="flex space-x-2 space-y-1">
+                 <div className="w-8 h-6 rounded bg-white/20"></div>
+                <div className="w-8 h-6 rounded bg-white/30"></div>
+              </div>
+              <div className="flex space-x-2">
+                <div className="w-8 h-6 rounded bg-white/20"></div>
+                <div className="w-8 h-6 rounded bg-white/30"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <p
-          className={`text-3xl md:text-4xl font-bold ${
-            darkMode ? "text-white" : "text-gray-900"
-          } mb-4 md:mb-6`}
-        >
-          {balanceVisible ? formatCurrency(balance) : "•••••"}
-        </p>
-
-        <div className="grid grid-cols-1  gap-3 md:gap-4">
-          {/* <button
-            onClick={() => setActiveTab("deposit")}
-            className={`py-2 md:py-3 px-2 rounded-lg shadow transition flex items-center justify-center space-x-2 ${
-              darkMode
-                ? "bg-gray-700 hover:bg-gray-600 text-white"
-                : "bg-white hover:bg-gray-100 text-gray-800"
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          >
-            <FiArrowDown className="h-4 w-4 md:h-5 md:w-5" />
-            <span>Deposit</span>
-          </button> */}
-
+        {/* Action Buttons */}
+        <div className="mt-6 grid grid-cols-1 gap-4">
           <button
             onClick={() => setActiveTab("withdraw")}
-            className={`py-2 md:py-3 px-2 rounded-lg shadow transition flex items-center justify-center space-x-2 ${
+            className={`group relative py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] ${
               darkMode
-                ? "bg-gray-700 hover:bg-gray-600 text-white"
-                : "bg-white hover:bg-gray-100 text-gray-800"
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                ? "bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white shadow-lg"
+                : "bg-gradient-to-r from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-gray-800 shadow-lg border border-gray-200"
+            }`}
           >
-            <FiArrowUp className="h-4 w-4 md:h-5 md:w-5" />
-            <span>Request for Payout</span>
+            <div className="flex items-center justify-center space-x-3">
+              <div className={`p-2 rounded-xl ${darkMode ? "bg-blue-600" : "bg-blue-100"}`}>
+                <FiArrowUp className={`h-5 w-5 ${darkMode ? "text-white" : "text-blue-600"}`} />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-lg">Request Payout</p>
+                <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+                  Withdraw your funds
+                </p>
+              </div>
+            </div>
+            <div className={`absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-blue-500/20 transition-all duration-300`}></div>
           </button>
-
-          {/* <button
-            onClick={() => setActiveTab("transfer")}
-            className={`py-2 md:py-3 px-2 rounded-lg shadow transition flex items-center justify-center space-x-2 ${
-              darkMode
-                ? "bg-gray-700 hover:bg-gray-600 text-white"
-                : "bg-white hover:bg-gray-100 text-gray-800"
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          >
-            <FiArrowUp className="h-4 w-4 md:h-5 md:w-5" />
-            <span>Transfer</span>
-          </button> */}
         </div>
       </div>
 
-      {/* Transactions Card */}
+      {/* Enhanced Transactions Card */}
       <div
-        className={`p-4 md:p-6 rounded-lg shadow-md ${
-          darkMode ? "bg-gray-800" : "bg-white"
+        className={`p-6 md:p-8 rounded-2xl shadow-xl border ${
+          darkMode 
+            ? "bg-slate-800/50 backdrop-blur-sm border-slate-700" 
+            : "bg-white/80 backdrop-blur-sm border-gray-200"
         }`}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h3
-            className={`text-lg md:text-xl font-semibold ${
-              darkMode ? "text-white" : "text-gray-800"
-            }`}
-          >
-            Recent Transactions
-          </h3>
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-3">
+            <div className={`p-2 rounded-xl ${darkMode ? "bg-emerald-900/50" : "bg-emerald-100"}`}>
+              <FiTrendingUp className={`h-5 w-5 ${darkMode ? "text-emerald-400" : "text-emerald-600"}`} />
+            </div>
+            <h3
+              className={`text-xl md:text-2xl font-bold ${
+                darkMode ? "text-white" : "text-gray-800"
+              }`}
+            >
+              Recent Activity
+            </h3>
+          </div>
           <button
-            className={`text-sm md:text-base ${
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 ${
               darkMode
-                ? "text-blue-400 hover:text-blue-300"
-                : "text-blue-600 hover:text-blue-800"
-            } focus:outline-none focus:ring-2 focus:ring-blue-500 rounded`}
+                ? "bg-slate-700 hover:bg-slate-600 text-blue-400"
+                : "bg-blue-50 hover:bg-blue-100 text-blue-600"
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
             onClick={() => getTransactions()}
           >
-            Refresh
+            <FiRefreshCw className="h-4 w-4" />
+            <span className="font-medium">Refresh</span>
           </button>
         </div>
 
         {transactions.length > 0 ? (
-          <div className="space-y-3">
-            {transactions.slice(0, 5).map((tx) => (
+          <div className="space-y-4">
+            {transactions.slice(0, 5).map((tx, index) => (
               <div
                 key={tx.id}
-                className={`p-3 md:p-4 rounded-lg flex items-center justify-between ${
+                className={`group p-4 md:p-5 rounded-xl transition-all duration-300 cursor-pointer transform hover:scale-[1.01] ${
                   darkMode
-                    ? "bg-gray-700 hover:bg-gray-600"
-                    : "bg-gray-50 hover:bg-gray-100"
-                } transition cursor-pointer`}
+                    ? "bg-slate-700/50 hover:bg-slate-700 border border-slate-600"
+                    : "bg-gray-50 hover:bg-gray-100 border border-gray-200"
+                } hover:shadow-lg`}
               >
-                <div className="flex items-center space-x-3">
-                  <div
-                    className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      tx.type === "deposit"
-                        ? darkMode
-                          ? "bg-green-900 text-green-300"
-                          : "bg-green-100 text-green-600"
-                        : darkMode
-                        ? "bg-red-900 text-red-300"
-                        : "bg-red-100 text-red-600"
-                    }`}
-                  >
-                    {tx.type === "deposit" ? (
-                      <FiArrowDown className="h-4 w-4 md:h-5 md:w-5" />
-                    ) : (
-                      <FiArrowUp className="h-4 w-4 md:h-5 md:w-5" />
-                    )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                        tx.type === "deposit"
+                          ? darkMode
+                            ? "bg-emerald-900/50 text-emerald-400 group-hover:bg-emerald-900"
+                            : "bg-emerald-100 text-emerald-600 group-hover:bg-emerald-200"
+                          : darkMode
+                          ? "bg-red-900/50 text-red-400 group-hover:bg-red-900"
+                          : "bg-red-100 text-red-600 group-hover:bg-red-200"
+                      }`}
+                    >
+                      {tx.type === "deposit" ? (
+                        <FiArrowDown className="h-5 w-5" />
+                      ) : (
+                        <FiArrowUp className="h-5 w-5" />
+                      )}
+                    </div>
+                    <div>
+                      <p
+                        className={`text-base md:text-lg font-semibold ${
+                          darkMode ? "text-white" : "text-gray-800"
+                        }`}
+                      >
+                        {tx.description ||
+                          tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
+                      </p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <p
+                          className={`text-sm ${
+                            darkMode ? "text-gray-400" : "text-gray-600"
+                          }`}
+                        >
+                          {new Date(tx.createdAt).toLocaleDateString()}
+                        </p>
+                        <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>•</span>
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full font-medium ${
+                            tx.status === 'completed'
+                              ? darkMode
+                                ? "bg-emerald-900/50 text-emerald-400"
+                                : "bg-emerald-100 text-emerald-700"
+                              : tx.status === 'pending'
+                              ? darkMode
+                                ? "bg-yellow-900/50 text-yellow-400"
+                                : "bg-yellow-100 text-yellow-700"
+                              : darkMode
+                              ? "bg-red-900/50 text-red-400"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {tx.status}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
+                  <div className="text-right">
                     <p
-                      className={`text-sm md:text-base font-medium ${
-                        darkMode ? "text-white" : "text-gray-700"
+                      className={`text-lg md:text-xl font-bold ${
+                        tx.type === "deposit"
+                          ? darkMode
+                            ? "text-emerald-400"
+                            : "text-emerald-600"
+                          : darkMode
+                          ? "text-red-400"
+                          : "text-red-600"
                       }`}
                     >
-                      {tx.description ||
-                        tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
-                    </p>
-                    <p
-                      className={`text-xs md:text-sm ${
-                        darkMode ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    >
-                      {new Date(tx.createdAt).toLocaleDateString()} •{" "}
-                      {tx.status}
+                      {tx.type === "deposit" ? "+" : "-"}
+                      {formatCurrency(tx.amount)}
                     </p>
                   </div>
                 </div>
-                <p
-                  className={`text-sm md:text-base font-bold ${
-                    tx.type === "deposit"
-                      ? darkMode
-                        ? "text-green-400"
-                        : "text-green-600"
-                      : darkMode
-                      ? "text-red-400"
-                      : "text-red-600"
-                  }`}
-                >
-                  {tx.type === "deposit" ? "+" : "-"}
-                  {formatCurrency(tx.amount)}
-                </p>
               </div>
             ))}
           </div>
         ) : (
-          <p
-            className={`text-center py-4 ${
-              darkMode ? "text-gray-400" : "text-gray-500"
-            }`}
-          >
-            No transactions yet
-          </p>
+          <div className="text-center py-12">
+            <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center ${
+              darkMode ? "bg-slate-700" : "bg-gray-100"
+            }`}>
+              <FiTrendingUp className={`h-8 w-8 ${darkMode ? "text-gray-400" : "text-gray-500"}`} />
+            </div>
+            <p
+              className={`text-lg font-medium ${
+                darkMode ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              No transactions yet
+            </p>
+            <p
+              className={`text-sm mt-1 ${
+                darkMode ? "text-gray-500" : "text-gray-400"
+              }`}
+            >
+              Your transaction history will appear here
+            </p>
+          </div>
         )}
       </div>
     </div>

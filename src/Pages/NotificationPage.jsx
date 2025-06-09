@@ -17,6 +17,8 @@ import {
   FiCheck,
   FiXCircle,
   FiRefreshCw,
+  FiArchive,
+  FiSettings,
 } from "react-icons/fi";
 import useAuthStore from "../Store/Auth";
 import useNotificationStore from "../Store/getUserNotifications";
@@ -29,21 +31,17 @@ import { format } from "date-fns";
 import axios from "../Api/axios";
 
 const NotificationPage = () => {
-  const [activeTab, setActiveTab] = useState("all");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedNotifications, setSelectedNotifications] = useState([]);
+  const [showActions, setShowActions] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  
   const { accessToken, user } = useAuthStore();
   const { notifications, loading, fetchNotifications, markAsRead } =
     useNotificationStore();
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-  const tabOptions = [
-    "all",
-    "payment_reminder",
-    "payment_confirmation",
-    "group_update",
-    "other",
-  ];
 
   const fetchNotificationsWithRetry = useCallback(async () => {
     try {
@@ -57,25 +55,30 @@ const NotificationPage = () => {
     }
   }, [accessToken, fetchNotifications]);
 
-  const filteredNotifications = useCallback(() => {
-    const tabFilters = {
-      all: () => true,
-      payment_reminder: (n) => n.type === "payment_reminder",
-      payment_confirmation: (n) => n.type === "payment_confirmation",
-      group_update: (n) =>
-        [
-          "group_update",
-          "added_to_group",
-          "removed_from_group",
-          "settings_change",
-          "payout_scheduled",
-          "member_change",
-        ].includes(n.type),
-      other: (n) => n.type === "other",
-    };
+  // Add this useEffect to fetch notifications on component mount
+  useEffect(() => {
+    fetchNotificationsWithRetry();
+  }, [fetchNotificationsWithRetry]);
 
-    return notifications.filter(tabFilters[activeTab] || tabFilters.all);
-  }, [activeTab, notifications]);
+  const handleNotificationClick = async (notification) => {
+    setSelectedNotification(notification);
+    setShowModal(true);
+    
+    // Mark as read if not already read
+    if (!notification.isRead) {
+      try {
+        await markAsRead(notification._id, accessToken);
+        await fetchNotificationsWithRetry();
+      } catch (error) {
+        console.error("Failed to mark notification as read:", error);
+      }
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedNotification(null);
+  };
 
   const handleMemberAction = async (notificationId, action) => {
     const notification = notifications.find((n) => n._id === notificationId);
@@ -104,6 +107,7 @@ const NotificationPage = () => {
       );
 
       await fetchNotificationsWithRetry();
+      closeModal(); // Close modal after action
     } catch (error) {
       console.error(error);
       toast.error(
@@ -112,55 +116,205 @@ const NotificationPage = () => {
     }
   };
 
+  const handleMarkAllAsRead = async () => {
+    try {
+      const unreadNotifications = notifications.filter(n => !n.isRead);
+      await Promise.all(
+        unreadNotifications.map(notification => 
+          markAsRead(notification._id, accessToken)
+        )
+      );
+      toast.success("All notifications marked as read");
+      await fetchNotificationsWithRetry();
+    } catch (error) {
+      toast.error("Failed to mark notifications as read");
+    }
+  };
+
   const formatDate = (dateString) => {
     try {
-      return format(new Date(dateString), "MMM d, yyyy h:mm a");
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffInHours = Math.abs(now - date) / 36e5;
+      
+      if (diffInHours < 1) {
+        return "Just now";
+      } else if (diffInHours < 24) {
+        return `${Math.floor(diffInHours)}h ago`;
+      } else if (diffInHours < 48) {
+        return "Yesterday";
+      } else {
+        return format(date, "MMM d, yyyy");
+      }
     } catch {
       return "Just now";
     }
   };
 
-  const renderNotificationActions = (notification) => {
+  const getNotificationTypeLabel = (type) => {
+    const typeLabels = {
+      payment_reminder: "Payment Due",
+      payment_confirmation: "Payment Confirmed",
+      group_update: "Group Update",
+      member_change: "Group Invitation",
+      added_to_group: "Added to Group",
+      removed_from_group: "Removed from Group",
+      settings_change: "Settings Changed",
+      payout_scheduled: "Payout Scheduled",
+      other: "Notification"
+    };
+    return typeLabels[type] || "Notification";
+  };
+
+  const renderNotificationActions = (notification, isModal = false) => {
     const actions = {
       member_change: (
-        <div className="flex flex-wrap gap-2 mt-3">
+        <div className="flex flex-wrap gap-2 mt-4">
           <button
             onClick={() => handleMemberAction(notification._id, "accept")}
-            className="flex items-center px-3 py-1.5 sm:px-4 sm:py-2 bg-emerald-500 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-emerald-600 transition-colors shadow-sm"
+            className="flex items-center px-4 py-2 bg-emerald-500 text-white rounded-xl text-sm font-medium hover:bg-emerald-600 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
           >
-            <FiCheck className="mr-1 sm:mr-2" size={14} /> Accept
+            <FiCheck className="mr-2" size={16} /> Accept Invitation
           </button>
           <button
             onClick={() => handleMemberAction(notification._id, "decline")}
-            className="flex items-center px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-100 text-gray-700 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-200 transition-colors shadow-sm"
+            className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
           >
-            <FiXCircle className="mr-1 sm:mr-2" size={14} /> Decline
+            <FiXCircle className="mr-2" size={16} /> Decline
           </button>
         </div>
       ),
       payment_reminder: (
-        <button className="mt-3 px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm">
-          Make Payment Now
+        <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-xl text-sm font-medium hover:bg-blue-600 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105">
+          <FiDollarSign className="inline mr-2" size={16} />
+          Pay Now
         </button>
       ),
     };
 
-    return !notification.isRead && actions[notification.type];
+    return (!notification.isRead || isModal) && actions[notification.type];
+  };
+
+  const NotificationModal = () => {
+    if (!selectedNotification) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          {/* Modal Header */}
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`p-3 rounded-xl ${
+                    selectedNotification.isRead
+                      ? "bg-gray-100 text-gray-500"
+                      : "bg-blue-100 text-blue-600"
+                  }`}
+                >
+                  {getNotificationIcon(selectedNotification.type, {
+                    className: "w-6 h-6",
+                  })}
+                </div>
+                <div>
+                  <span className={`text-xs px-3 py-1 rounded-full font-medium ${
+                    selectedNotification.isRead
+                      ? "bg-gray-100 text-gray-600"
+                      : "bg-blue-100 text-blue-700"
+                  }`}>
+                    {getNotificationTypeLabel(selectedNotification.type)}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={closeModal}
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+              >
+                <FiX className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+          </div>
+
+          {/* Modal Body */}
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              {selectedNotification.message}
+            </h2>
+
+            {/* Notification Details */}
+            <div className="space-y-4">
+              <div className="flex items-center text-sm text-gray-600">
+                <FiClock className="mr-2 w-4 h-4" />
+                <span>{formatDate(selectedNotification.createdAt)}</span>
+              </div>
+
+              {selectedNotification.group && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <FiUsers className="mr-2 w-4 h-4" />
+                  <span className="font-medium">
+                    Group: {selectedNotification.group.name}
+                  </span>
+                </div>
+              )}
+
+              {selectedNotification.sender && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <FiUserPlus className="mr-2 w-4 h-4" />
+                  <span>
+                    From: {selectedNotification.sender.firstName} {selectedNotification.sender.lastName}
+                  </span>
+                </div>
+              )}
+
+              {/* Additional notification data */}
+              {selectedNotification.data && (
+                <div className="bg-gray-50 rounded-xl p-4 mt-4">
+                  <h4 className="font-medium text-gray-700 mb-2">Additional Details:</h4>
+                  <pre className="text-sm text-gray-600 whitespace-pre-wrap">
+                    {JSON.stringify(selectedNotification.data, null, 2)}
+                  </pre>
+                </div>
+              )}
+
+              {/* Status */}
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                <span className="text-sm text-gray-500">Status:</span>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  selectedNotification.isRead
+                    ? "bg-green-100 text-green-700"
+                    : "bg-orange-100 text-orange-700"
+                }`}>
+                  {selectedNotification.isRead ? "Read" : "Unread"}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            {renderNotificationActions(selectedNotification, true)}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const LoadingState = () => (
     <div className="space-y-4">
-      {[...Array(5)].map((_, i) => (
+      {[...Array(6)].map((_, i) => (
         <div
           key={i}
-          className="p-4 sm:p-5 rounded-xl bg-white border border-gray-200 animate-pulse"
+          className="p-6 rounded-2xl bg-white border border-gray-100 animate-pulse shadow-sm"
         >
-          <div className="flex gap-3 sm:gap-4 items-start">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-lg"></div>
-            <div className="flex-1 space-y-2 sm:space-y-3">
-              <div className="h-3 sm:h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-2.5 sm:h-3 bg-gray-200 rounded w-1/2"></div>
-              <div className="h-6 sm:h-8 bg-gray-200 rounded w-full mt-1 sm:mt-2"></div>
+          <div className="flex gap-4 items-start">
+            <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+            <div className="flex-1 space-y-3">
+              <div className="flex justify-between items-start">
+                <div className="space-y-2 flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+                <div className="w-16 h-3 bg-gray-200 rounded"></div>
+              </div>
+              <div className="h-8 bg-gray-200 rounded w-full"></div>
             </div>
           </div>
         </div>
@@ -169,127 +323,162 @@ const NotificationPage = () => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="p-2 sm:p-3 bg-blue-100 rounded-xl text-blue-600">
-            <FiBell size={20} className="sm:w-6 sm:h-6" />
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+      {/* Enhanced Header */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl text-white shadow-lg">
+                <FiBell size={24} />
+              </div>
+              {unreadCount > 0 && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </div>
+              )}
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                Notifications
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                {unreadCount > 0
+                  ? `${unreadCount} unread message${unreadCount !== 1 ? "s" : ""}`
+                  : "You're all caught up! 🎉"}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
-              Notifications
-            </h1>
-            <p className="text-sm sm:text-base text-gray-500">
-              {unreadCount > 0
-                ? `${unreadCount} unread notification${
-                    unreadCount !== 1 ? "s" : ""
-                  }`
-                : "All caught up"}
-            </p>
-          </div>
-        </div>
 
-        <div className="flex gap-2 self-end sm:self-auto">
-          <button
-            onClick={fetchNotificationsWithRetry}
-            disabled={isRefreshing}
-            className="p-1.5 sm:p-2 cursor-pointer bg-white rounded-lg border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-colors disabled:opacity-50"
-            aria-label="Refresh"
-          >
-            <FiRefreshCw
-              className={`sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`}
-              size={16}
-            />
-          </button>
-
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1.5 sm:p-2 bg-white rounded-lg border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-colors md:hidden"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <FiX size={16} /> : <FiMenu size={16} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div
-        className={`${
-          mobileMenuOpen ? "block" : "hidden"
-        } md:block mb-6 sm:mb-8`}
-      >
-        <div className="flex flex-wrap gap-1 sm:gap-2">
-          {tabOptions.map((tab) => (
+          <div className="flex items-center gap-3">
+            {unreadCount > 0 && (
+              <button
+                onClick={handleMarkAllAsRead}
+                className="flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-200 transition-all duration-200"
+              >
+                <FiCheckCircle className="mr-2" size={16} />
+                Mark all read
+              </button>
+            )}
+            
             <button
-              key={tab}
-              onClick={() => {
-                setActiveTab(tab);
-                setMobileMenuOpen(false);
-              }}
-              className={`px-3 cursor-pointer py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-                activeTab === tab
-                  ? "bg-blue-500 text-white shadow-sm"
-                  : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
-              }`}
+              onClick={fetchNotificationsWithRetry}
+              disabled={isRefreshing}
+              className="p-2 bg-white rounded-xl border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 shadow-sm"
+              aria-label="Refresh notifications"
             >
-              {tab
-                .split("_")
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" ")}
+              <FiRefreshCw
+                className={`w-5 h-5 ${isRefreshing ? "animate-spin" : ""}`}
+              />
             </button>
-          ))}
+          </div>
         </div>
+
+        {/* Stats Cards
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <FiBell className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-blue-900">{notifications.length}</p>
+                <p className="text-sm text-blue-600">Total</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-100">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 rounded-lg">
+                <FiCheckCircle className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-emerald-900">{notifications.length - unreadCount}</p>
+                <p className="text-sm text-emerald-600">Read</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-100">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <FiClock className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-orange-900">{unreadCount}</p>
+                <p className="text-sm text-orange-600">Unread</p>
+              </div>
+            </div>
+          </div>
+        </div> */}
       </div>
 
-      {/* Content */}
+      {/* Notifications List */}
       {loading && !isRefreshing ? (
         <LoadingState />
       ) : (
-        <div className="space-y-3 sm:space-y-4">
-          {filteredNotifications().length > 0 ? (
-            filteredNotifications().map((notification) => (
+        <div className="space-y-4">
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
               <div
                 key={notification._id}
-                className={`p-4 sm:p-5 rounded-xl transition-all ${
+                onClick={() => handleNotificationClick(notification)}
+                className={`group p-6 rounded-2xl transition-all duration-300 cursor-pointer hover:shadow-lg transform hover:-translate-y-1 ${
                   notification.isRead
-                    ? "bg-white border border-gray-200"
-                    : "bg-blue-50 border-l-4 border-blue-500"
-                } shadow-xs hover:shadow-sm`}
+                    ? "bg-white border border-gray-100 hover:border-gray-200"
+                    : "bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-md"
+                }`}
               >
-                <div className="flex gap-3 sm:gap-4 items-start">
-                  <div
-                    className={`p-2 sm:p-3 rounded-lg ${
-                      notification.isRead
-                        ? "bg-gray-100 text-gray-500"
-                        : "bg-blue-100 text-blue-500"
-                    }`}
-                  >
-                    {getNotificationIcon(notification.type, {
-                      className: "w-4 h-4 sm:w-5 sm:h-5",
-                    })}
+                <div className="flex gap-4 items-start">
+                  <div className="relative">
+                    <div
+                      className={`p-3 rounded-xl transition-all duration-300 ${
+                        notification.isRead
+                          ? "bg-gray-100 text-gray-500 group-hover:bg-gray-200"
+                          : "bg-blue-100 text-blue-600 group-hover:bg-blue-200"
+                      }`}
+                    >
+                      {getNotificationIcon(notification.type, {
+                        className: "w-5 h-5",
+                      })}
+                    </div>
+                    {!notification.isRead && (
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"></div>
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-2">
-                      <h3
-                        className={`text-sm sm:text-base font-medium ${
-                          notification.isRead
-                            ? "text-gray-700"
-                            : "text-gray-900"
-                        }`}
-                      >
-                        {notification.message}
-                      </h3>
-                      <time className="text-xs text-gray-500 whitespace-nowrap">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                            notification.isRead
+                              ? "bg-gray-100 text-gray-600"
+                              : "bg-blue-100 text-blue-700"
+                          }`}>
+                            {getNotificationTypeLabel(notification.type)}
+                          </span>
+                        </div>
+                        <h3
+                          className={`text-base font-semibold leading-relaxed ${
+                            notification.isRead
+                              ? "text-gray-700"
+                              : "text-gray-900"
+                          }`}
+                        >
+                          {notification.message}
+                        </h3>
+                      </div>
+                      <time className="text-sm text-gray-500 whitespace-nowrap font-medium">
                         {formatDate(notification.createdAt)}
                       </time>
                     </div>
 
                     {notification.group && (
-                      <div className="flex items-center mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">
-                        <FiUsers className="mr-1 sm:w-3.5 sm:h-3.5" size={12} />
-                        <span className="truncate">
+                      <div className="flex items-center mt-2 mb-3 text-sm text-gray-600 bg-gray-50 rounded-lg p-2 w-fit">
+                        <FiUsers className="mr-2 w-4 h-4" />
+                        <span className="font-medium">
                           {notification.group.name}
                         </span>
                       </div>
@@ -301,25 +490,30 @@ const NotificationPage = () => {
               </div>
             ))
           ) : (
-            <div className="text-center py-8 sm:py-12 bg-white rounded-xl border border-gray-200">
-              <div className="mx-auto w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
-                <FiBell className="text-gray-400 sm:w-6 sm:h-6" size={20} />
+            <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
+              <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mb-6">
+                <FiBell className="text-blue-500 w-8 h-8" />
               </div>
-              <h3 className="text-base sm:text-lg font-medium text-gray-700 mb-1">
-                {activeTab === "all" ? "All caught up!" : "No notifications"}
+              <h3 className="text-xl font-bold text-gray-700 mb-2">
+                No notifications yet
               </h3>
-              <p className="text-sm sm:text-base text-gray-500 max-w-md mx-auto px-2">
-                {activeTab === "all"
-                  ? "You don't have any notifications at this time."
-                  : `No ${tabOptions
-                      .find((t) => t === activeTab)
-                      ?.split("_")
-                      .join(" ")} notifications found.`}
+              <p className="text-gray-500 max-w-md mx-auto px-4 leading-relaxed">
+                When you receive notifications about payments, group updates, and other activities, they'll appear here.
               </p>
+              <button
+                onClick={fetchNotificationsWithRetry}
+                className="mt-6 px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <FiRefreshCw className="inline mr-2" size={16} />
+                Check for notifications
+              </button>
             </div>
           )}
         </div>
       )}
+
+      {/* Notification Modal */}
+      {showModal && <NotificationModal />}
     </div>
   );
 };
