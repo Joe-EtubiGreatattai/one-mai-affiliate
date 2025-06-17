@@ -373,7 +373,7 @@ function Referrals() {
                   <div className="grid grid-cols-1 gap-4">
                   <div className="bg-white p-4 rounded-lg shadow border">
                     <h3 className="text-sm text-gray-500 mb-1">Total Referrals</h3>
-                    <p className="text-2xl font-bold text-gray-800">
+                    <p className="text-2xl font-bold text-[#3390d5]">
                     {referralData.affiliateStats.totalReferrals}
                     </p>
                   </div>

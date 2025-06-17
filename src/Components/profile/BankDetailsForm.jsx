@@ -523,7 +523,7 @@ const BankDetailsForm = ({
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl text-sm sm:text-base"
+            className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4  bg-[#3390d5] text-white rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl text-sm sm:text-base"
           >
             <FiPlus className="mr-2" size={18} />
             Add Your First Bank Account
