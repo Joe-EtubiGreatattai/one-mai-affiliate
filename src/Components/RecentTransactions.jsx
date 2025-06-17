@@ -23,7 +23,7 @@ const RecentTransactions = () => {
       case "referral":
         return <FiGift className={`text-green-500 ${iconSize}`} />;
       case "deposit":
-        return <FiArrowDownCircle className={`text-blue-500 ${iconSize}`} />;
+        return <FiArrowDownCircle className={`text-[#378CCC] ${iconSize}`} />;
       default:
         return <FiArrowDownCircle className={`text-purple-500 ${iconSize}`} />;
     }
@@ -54,7 +54,7 @@ const RecentTransactions = () => {
         {transactions?.length > 0 && (
           <Link
             to="/transactions"
-            className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 flex items-center"
+            className="text-xs sm:text-sm text-[#378CCC] hover:text-blue-800 flex items-center"
           >
             View All <FiExternalLink className="ml-1" />
           </Link>
@@ -89,7 +89,7 @@ const RecentTransactions = () => {
           {transactions.slice(0, 5).map((transaction) => (
             <div
               key={transaction._id}
-              className="p-3 sm:p-4 hover:bg-gray-50 transition-colors duration-150"
+              className="p-3 sm:p-4 hover:bg-white transition-colors duration-150"
             >
               <div className="flex items-center justify-between gap-2 sm:gap-3">
                 {/* Icon and Description */}
@@ -127,10 +127,10 @@ const RecentTransactions = () => {
 
       {/* Footer */}
       {!loading && transactions?.length > 5 && (
-        <div className="p-2 sm:p-3 border-t border-gray-100 text-center bg-gray-50">
+        <div className="p-2 sm:p-3 border-t border-gray-100 text-center bg-white">
           <Link
             to="/transactions"
-            className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium inline-flex items-center"
+            className="text-xs sm:text-sm text-[#378CCC] hover:text-blue-800 font-medium inline-flex items-center"
           >
             View All Transactions <FiExternalLink className="ml-1" />
           </Link>

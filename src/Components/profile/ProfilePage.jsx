@@ -176,7 +176,7 @@ const ProfilePage = () => {
   return (
     <div
       className={`flex flex-col md:flex-row min-h-screen transition-colors duration-300 ${
-        darkMode ? "dark bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"
+        darkMode ? "dark bg-gray-900 text-gray-100" : "bg-white text-gray-800"
       }`}
     >
       {/* Notification Toast */}

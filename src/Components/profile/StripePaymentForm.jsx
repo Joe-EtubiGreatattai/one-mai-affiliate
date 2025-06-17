@@ -69,8 +69,8 @@ const StripePaymentForm = ({
           w-full py-3 px-4 rounded-lg shadow transition-all duration-200
           ${
             darkMode
-              ? "bg-blue-600 hover:bg-blue-700 focus:bg-blue-700"
-              : "bg-blue-600 hover:bg-blue-700 focus:bg-blue-700"
+              ? "bg-[#378CCC] hover:bg-[#378CCC] focus:bg-[#378CCC]"
+              : "bg-[#378CCC] hover:bg-[#378CCC] focus:bg-[#378CCC]"
           }
           text-white font-medium
            'hover:shadow-lg'}

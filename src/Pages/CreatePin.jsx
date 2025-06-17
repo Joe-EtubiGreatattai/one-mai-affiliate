@@ -60,7 +60,7 @@ const CreatePin = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden bg-gray-50">
+    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden bg-white">
       {/* Form Section - Always visible */}
       <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
         <div className="w-full max-w-md mx-auto">
@@ -112,8 +112,8 @@ const CreatePin = () => {
                 }
                 className={`w-full py-2 cursor-pointer sm:py-3 px-4 text-white text-sm sm:text-base font-medium rounded-md ${
                   loading
-                    ? "bg-blue-400"
-                    : "bg-blue-600 hover:bg-blue-700"
+                    ? "bg-[#378CCC]"
+                    : "bg-[#378CCC] hover:bg-[#378CCC]"
                 } transition-colors duration-200`}
               >
                 {loading
@@ -128,7 +128,7 @@ const CreatePin = () => {
                   type="button"
                   onClick={() => setStep(1)}
                   disabled={loading}
-                  className="w-full cursor-pointer text-center text-blue-600 hover:text-blue-500 text-sm sm:text-base font-medium transition-colors duration-200"
+                  className="w-full cursor-pointer text-center text-[#378CCC] hover:text-[#378CCC] text-sm sm:text-base font-medium transition-colors duration-200"
                 >
                   Back to create PIN
                 </button>

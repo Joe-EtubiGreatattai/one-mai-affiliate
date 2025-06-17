@@ -313,7 +313,7 @@ function Referrals() {
           </div>
           
           <div className="text-center space-y-3 w-full">
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-white rounded-xl p-4">
               <p className="text-sm font-medium text-gray-700 mb-2">Referral Code:</p>
               <p className="font-mono bg-white px-4 py-2 rounded-lg text-lg font-semibold border border-gray-200">
                 {referralData?.affiliateStats?.referralCode}
@@ -356,7 +356,7 @@ function Referrals() {
         {/* Add Referral Button */}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium lg:order-2"
+          className="flex items-center justify-center px-4 py-2 bg-[#378CCC] text-white rounded-lg hover:bg-[#378CCC] transition-colors text-sm font-medium lg:order-2"
         >
           <FiPlus className="mr-2" size={16} />
           Add Referral
@@ -385,7 +385,7 @@ function Referrals() {
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow border">
                   <h3 className="text-sm text-gray-500 mb-1">Total Earnings</h3>
-                  <p className="text-2xl font-bold flex items-center text-blue-600">
+                  <p className="text-2xl font-bold flex items-center text-[#378CCC]">
                     <FiDollarSign className="mr-1" />
                     {referralData.affiliateStats.totalBonusEarned || 0}
                   </p>
@@ -432,7 +432,7 @@ function Referrals() {
                   {/* Referral Code Display */}
                   <div className="text-center mb-4">
                     <p className="text-xs text-gray-500 mb-2">Referral Code:</p>
-                    <div className="bg-gray-50 rounded-lg p-2 border">
+                    <div className="bg-white rounded-lg p-2 border">
                       <span className="font-mono text-sm font-semibold">
                         {referralData.affiliateStats.referralCode || "Loading..."}
                       </span>
@@ -448,7 +448,7 @@ function Referrals() {
                           "Referral code copied to clipboard!"
                         )}
                         disabled={!referralData.affiliateStats.referralCode}
-                        className="flex items-center justify-center px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs font-medium disabled:opacity-50"
+                        className="flex items-center justify-center px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-[#378CCC] transition-colors text-xs font-medium disabled:opacity-50"
                       >
                         <FiCopy className="mr-1" size={12} />
                         Copy Code
@@ -507,7 +507,7 @@ function Referrals() {
           <div className="bg-white shadow rounded-lg border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-white">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Name
@@ -526,7 +526,7 @@ function Referrals() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredReferrals.length > 0 ? (
                     filteredReferrals.map((referral) => (
-                      <tr key={referral.referralId} className="hover:bg-gray-50">
+                      <tr key={referral.referralId} className="hover:bg-white">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
                             {referral.user?.name || "N/A"}

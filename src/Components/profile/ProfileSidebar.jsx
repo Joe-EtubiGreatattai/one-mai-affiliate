@@ -83,8 +83,8 @@ const ProfileSidebar = ({
             <div
               className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${
                 darkMode
-                  ? "bg-gray-700 peer-checked:bg-blue-500 after:border-gray-600"
-                  : "bg-gray-200 peer-checked:bg-blue-500 after:border-gray-300"
+                  ? "bg-gray-700 peer-checked:bg-[#378CCC] after:border-gray-600"
+                  : "bg-gray-200 peer-checked:bg-[#378CCC] after:border-gray-300"
               }`}
             ></div>
           </label>
@@ -98,8 +98,8 @@ const ProfileSidebar = ({
           key="faq"
           className={`flex items-center cursor-pointer ${
             darkMode
-              ? "text-gray-300 hover:text-blue-400"
-              : "text-gray-700 hover:text-blue-500"
+              ? "text-gray-300 hover:text-[#378CCC]"
+              : "text-gray-700 hover:text-[#378CCC]"
           }`}
         >
           <FiHelpCircle className="mr-2 h-4 w-4" />
@@ -130,10 +130,10 @@ const ProfileSidebar = ({
         key={item.tab}
         className={`flex items-center cursor-pointer transition-colors ${
           activeTab === item.tab
-            ? "text-blue-500"
+            ? "text-[#378CCC]"
             : darkMode
-            ? "text-gray-300 hover:text-blue-400"
-            : "text-gray-700 hover:text-blue-500"
+            ? "text-gray-300 hover:text-[#378CCC]"
+            : "text-gray-700 hover:text-[#378CCC]"
         }`}
         onClick={() => !isLoading && setActiveTab(item.tab)}
       >
@@ -189,7 +189,7 @@ const ProfileSidebar = ({
         </div>
         <button
           className={`p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${
-            darkMode ? "text-blue-400" : "text-blue-500"
+            darkMode ? "text-[#378CCC]" : "text-[#378CCC]"
           }`}
           onClick={() => setActiveTab("profile")}
           aria-label="Edit profile"

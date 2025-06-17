@@ -278,7 +278,7 @@ const ProfileForm = ({
             {/* Edit Button */}
             <button
               onClick={handleEdit}
-              className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 text-white rounded-lg font-medium text-sm sm:text-base shadow-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300"
+              className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-[#378CCC] text-white rounded-lg font-medium text-sm sm:text-base shadow-lg hover:bg-[#378CCC] transform hover:scale-105 transition-all duration-300"
             >
               <FiEdit3 className="mr-2 h-4 w-4" />
               Edit Profile
@@ -297,7 +297,7 @@ const ProfileForm = ({
             <h2 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center ${
               darkMode ? "text-white" : "text-gray-800"
             }`}>
-              <FiUser className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+              <FiUser className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-[#378CCC]" />
               Personal Information
             </h2>
             
@@ -438,8 +438,8 @@ const ProfileForm = ({
                 onClick={() => fileInputRef.current?.click()}
                 className={`inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   darkMode
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                    ? "bg-[#378CCC] hover:bg-[#378CCC] text-white"
+                    : "bg-[#378CCC] hover:bg-[#378CCC] text-white"
                 }`}
               >
                 <FiUpload className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
@@ -496,7 +496,7 @@ const ProfileForm = ({
                 className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
                   darkMode
                     ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                    : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500"
+                    : "bg-white border-gray-300 text-gray-900 placeholder-gray-500"
                 }`}
                 placeholder="Enter your first name"
                 required
@@ -520,7 +520,7 @@ const ProfileForm = ({
                 className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
                   darkMode
                     ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                    : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500"
+                    : "bg-white border-gray-300 text-gray-900 placeholder-gray-500"
                 }`}
                 placeholder="Enter your last name"
                 required
@@ -560,7 +560,7 @@ const ProfileForm = ({
               className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-lg text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
                 darkMode
                   ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                  : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500"
+                  : "bg-white border-gray-300 text-gray-900 placeholder-gray-500"
               }`}
               placeholder="Enter your phone number"
               pattern="^[\d\s\+\-\(\)]{10,15}$"
@@ -596,7 +596,7 @@ const ProfileForm = ({
               loading 
                 ? "opacity-70 cursor-not-allowed" 
                 : "hover:scale-105 shadow-lg hover:shadow-xl"
-            } bg-blue-600 hover:bg-blue-700 flex items-center justify-center`}
+            } bg-[#378CCC] hover:bg-[#378CCC] flex items-center justify-center`}
           >
             {loading ? (
               <>

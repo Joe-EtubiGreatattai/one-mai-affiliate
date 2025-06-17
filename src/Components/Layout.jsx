@@ -81,30 +81,30 @@ const Layout = () => {
     setShowDropdown(false);
   };
 
-  const NavItem = ({ to, icon, text, onClick }) => (
-    <NavLink
-      to={to}
-      onClick={onClick}
-      className={({ isActive }) =>
-        `flex items-center p-3 rounded-lg transition-colors relative ${
-          isActive
-            ? "bg-blue-50 text-blue-600 font-medium dark:bg-gray-700 dark:text-white"
-            : "text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
-        }`
-      }
-      end
-    >
-      {({ isActive }) => (
-        <>
-          <span className="flex-shrink-0">{icon}</span>
-          <span className="ml-3 text-sm">{text}</span>
-          {isActive && (
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r-md"></div>
-          )}
-        </>
-      )}
-    </NavLink>
-  );
+const NavItem = ({ to, icon, text, onClick }) => (
+  <NavLink
+    to={to}
+    onClick={onClick}
+    className={({ isActive }) =>
+      `flex items-center p-3 rounded-lg transition-colors relative ${
+        isActive
+          ? "bg-white text-[#378CCC] font-medium dark:bg-gray-700 dark:text-white"
+          : "text-gray-600 hover:bg-white dark:text-gray-300 dark:hover:bg-gray-800"
+      }`
+    }
+    end
+  >
+    {({ isActive }) => (
+      <>
+        <span className="flex-shrink-0">{icon}</span>
+        <span className="ml-3 text-sm">{text}</span>
+        {isActive && (
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#378CCC] rounded-r-md"></div>
+        )}
+      </>
+    )}
+  </NavLink>
+);
 
   // Mobile Bottom Tab Item Component
   const BottomTabItem = ({ to, icon, text }) => (
@@ -113,7 +113,7 @@ const Layout = () => {
       className={({ isActive }) =>
         `flex flex-col items-center justify-center py-2 px-3 flex-1 transition-colors ${
           isActive
-            ? "text-blue-600 dark:text-blue-400"
+            ? "text-[#378CCC] dark:text-[#378CCC]"
             : "text-gray-500 dark:text-gray-400"
         }`
       }
@@ -129,7 +129,7 @@ const Layout = () => {
   );
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-white dark:bg-gray-900">
       {/* Desktop Sidebar - Visible on lg screens and up */}
       <div
         className={`hidden lg:block fixed inset-y-0 left-0 z-30 w-64 shadow-lg border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 ${

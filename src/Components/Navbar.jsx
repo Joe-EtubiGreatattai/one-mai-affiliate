@@ -114,8 +114,8 @@ const Navbar = ({ toggleSidebar }) => {
       onClick={onClick}
       className={({ isActive }) => 
         `flex items-center p-3 rounded-lg transition-colors ${isActive ? 
-          'bg-blue-50 text-blue-600 font-medium' : 
-          'text-gray-600 hover:bg-gray-50'}`
+          'bg-blue-50 text-[#378CCC] font-medium' : 
+          'text-gray-600 hover:bg-white'}`
       }
       end
     >
@@ -129,7 +129,7 @@ const Navbar = ({ toggleSidebar }) => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="md:hidden fixed bottom-4 right-4 z-40 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors mobile-menu-button"
+        className="md:hidden fixed bottom-4 right-4 z-40 bg-[#378CCC] text-white p-3 rounded-full shadow-lg hover:bg-[#378CCC] transition-colors mobile-menu-button"
         aria-label="Toggle menu"
       >
         {mobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
@@ -177,7 +177,7 @@ const Navbar = ({ toggleSidebar }) => {
             <NavItem to="/settings" icon={<FiSettings size={20} />} text="Settings" onClick={() => setMobileMenuOpen(false)} />
             <button
               onClick={handleLogout}
-              className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-150 flex items-center"
+              className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-white rounded-lg transition-colors duration-150 flex items-center"
             >
               <span className="flex-shrink-0"><FiLogOut size={20} /></span>
               <span className="ml-3 text-sm">Sign out</span>

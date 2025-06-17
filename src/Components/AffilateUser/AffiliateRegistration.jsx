@@ -122,9 +122,9 @@ function AffiliateRegistration() {
   };
 
   return (
-    <div className="h-dvh flex flex-col md:flex-row bg-gray-50">
+    <div className="h-dvh flex flex-col md:flex-row bg-white">
       {/* Mobile Header */}
-      {/* <div className='bg-blue-700 text-white p-4 text-center block md:hidden'>
+      {/* <div className='bg-[#378CCC] text-white p-4 text-center block md:hidden'>
         <div className='flex justify-center items-center mb-2'>
           <img
             src={AffiliateIllustration}
@@ -456,7 +456,7 @@ function AffiliateRegistration() {
                 type="submit"
                 disabled={loading}
                 className={`w-full cursor-pointer flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                  loading ? "bg-blue-400" : "bg-[#3390D5] hover:bg-blue-700"
+                  loading ? "bg-[#378CCC]" : "bg-[#3390D5] hover:bg-[#378CCC]"
                 } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3390D5] transition-colors duration-200`}
               >
                 {loading ? (
