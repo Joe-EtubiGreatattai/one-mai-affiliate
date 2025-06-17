@@ -21,7 +21,7 @@ const RecentTransactions = () => {
       case "withdrawal":
         return <FiArrowUpCircle className={`text-red-500 ${iconSize}`} />;
       case "referral":
-        return <FiGift className={`text-green-500 ${iconSize}`} />;
+        return <FiGift className={`text-[#3390d5] ${iconSize}`} />;
       case "deposit":
         return <FiArrowDownCircle className={`text-[#3390d5] ${iconSize}`} />;
       default:
@@ -113,7 +113,7 @@ const RecentTransactions = () => {
                     className={`font-semibold text-xs sm:text-sm ${
                       transaction.type === "withdrawal"
                         ? "text-red-500"
-                        : "text-green-500"
+                        : "text-[#3390d5]"
                     }`}
                   >
                     {formatAmount(transaction.type, transaction.amount)}

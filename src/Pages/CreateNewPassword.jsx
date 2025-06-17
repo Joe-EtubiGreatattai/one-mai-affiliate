@@ -143,7 +143,7 @@ const CreateNewPassword = () => {
           <div className="bg-white rounded-lg p-4 sm:p-6 max-w-sm w-full">
             <div className="text-center">
               <div className="flex justify-center mb-3 sm:mb-4">
-                <FiCheckCircle className="text-green-500 text-4xl sm:text-5xl" />
+                <FiCheckCircle className="text-[#3390d5] text-4xl sm:text-5xl" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-1 sm:mb-2">
                 Password Reset Successful

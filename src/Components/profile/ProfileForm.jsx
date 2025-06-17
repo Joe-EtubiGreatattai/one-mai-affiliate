@@ -343,7 +343,7 @@ const ProfileForm = ({
             <h2 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center ${
               darkMode ? "text-white" : "text-gray-800"
             }`}>
-              <FiPhone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+              <FiPhone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-[#3390d5]" />
               Contact Information
             </h2>
             

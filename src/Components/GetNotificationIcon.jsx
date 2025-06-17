@@ -21,7 +21,7 @@ export const getNotificationIcon = (type) => {
     "payment-confirmation": {
       icon: <FiDollarSign size={iconSize} aria-hidden="true" />,
       bg: "bg-green-100",
-      text: "text-green-600",
+      text: "text-[#3390d5]",
       ariaLabel: "Payment confirmation"
     },
     "group-update": {
@@ -91,7 +91,7 @@ export const NotificationIcon = ({ type, size = "md" }) => {
     "payment-confirmation": {
       icon: FiDollarSign,
       bg: "bg-green-100",
-      text: "text-green-600",
+      text: "text-[#3390d5]",
     },
     "group-update": {
       icon: FiUsers,

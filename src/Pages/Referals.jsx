@@ -379,7 +379,7 @@ function Referrals() {
                   </div>
                   <div className="bg-white p-4 rounded-lg shadow border">
                     <h3 className="text-sm text-gray-500 mb-1">Active Referrals</h3>
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-2xl font-bold text-[#3390d5]">
                     {referralData.affiliateStats.activeReferrals}
                     </p>
                   </div>
