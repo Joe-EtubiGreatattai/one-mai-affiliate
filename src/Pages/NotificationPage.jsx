@@ -185,7 +185,7 @@ const NotificationPage = () => {
         </div>
       ),
       payment_reminder: (
-        <button className="mt-4 px-4 py-2 bg-[#378CCC] text-white rounded-xl text-sm font-medium hover:bg-[#378CCC] transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105">
+        <button className="mt-4 px-4 py-2 bg-[#3390d5] text-white rounded-xl text-sm font-medium hover:bg-[#3390d5] transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105">
           <FiDollarSign className="inline mr-2" size={16} />
           Pay Now
         </button>
@@ -209,7 +209,7 @@ const NotificationPage = () => {
                   className={`p-3 rounded-xl ${
                     selectedNotification.isRead
                       ? "bg-gray-100 text-gray-500"
-                      : "bg-blue-100 text-[#378CCC]"
+                      : "bg-blue-100 text-[#3390d5]"
                   }`}
                 >
                   {getNotificationIcon(selectedNotification.type, {
@@ -379,11 +379,11 @@ const NotificationPage = () => {
           <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <FiBell className="w-5 h-5 text-[#378CCC]" />
+                <FiBell className="w-5 h-5 text-[#3390d5]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-blue-900">{notifications.length}</p>
-                <p className="text-sm text-[#378CCC]">Total</p>
+                <p className="text-sm text-[#3390d5]">Total</p>
               </div>
             </div>
           </div>
@@ -436,7 +436,7 @@ const NotificationPage = () => {
                       className={`p-3 rounded-xl transition-all duration-300 ${
                         notification.isRead
                           ? "bg-gray-100 text-gray-500 group-hover:bg-gray-200"
-                          : "bg-blue-100 text-[#378CCC] group-hover:bg-[#378CCC]"
+                          : "bg-blue-100 text-[#3390d5] group-hover:bg-[#3390d5]"
                       }`}
                     >
                       {getNotificationIcon(notification.type, {
@@ -444,7 +444,7 @@ const NotificationPage = () => {
                       })}
                     </div>
                     {!notification.isRead && (
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#378CCC] rounded-full"></div>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#3390d5] rounded-full"></div>
                     )}
                   </div>
 
@@ -492,7 +492,7 @@ const NotificationPage = () => {
           ) : (
             <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
               <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mb-6">
-                <FiBell className="text-[#378CCC] w-8 h-8" />
+                <FiBell className="text-[#3390d5] w-8 h-8" />
               </div>
               <h3 className="text-xl font-bold text-gray-700 mb-2">
                 No notifications yet
@@ -502,7 +502,7 @@ const NotificationPage = () => {
               </p>
               <button
                 onClick={fetchNotificationsWithRetry}
-                className="mt-6 px-6 py-3 bg-[#378CCC] text-white rounded-xl font-medium hover:bg-[#378CCC] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="mt-6 px-6 py-3 bg-[#3390d5] text-white rounded-xl font-medium hover:bg-[#3390d5] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 <FiRefreshCw className="inline mr-2" size={16} />
                 Check for notifications

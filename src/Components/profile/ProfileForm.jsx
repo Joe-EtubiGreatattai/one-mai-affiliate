@@ -278,7 +278,7 @@ const ProfileForm = ({
             {/* Edit Button */}
             <button
               onClick={handleEdit}
-              className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-[#378CCC] text-white rounded-lg font-medium text-sm sm:text-base shadow-lg hover:bg-[#378CCC] transform hover:scale-105 transition-all duration-300"
+              className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-[#3390d5] text-white rounded-lg font-medium text-sm sm:text-base shadow-lg hover:bg-[#3390d5] transform hover:scale-105 transition-all duration-300"
             >
               <FiEdit3 className="mr-2 h-4 w-4" />
               Edit Profile
@@ -297,7 +297,7 @@ const ProfileForm = ({
             <h2 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center ${
               darkMode ? "text-white" : "text-gray-800"
             }`}>
-              <FiUser className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-[#378CCC]" />
+              <FiUser className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-[#3390d5]" />
               Personal Information
             </h2>
             
@@ -438,8 +438,8 @@ const ProfileForm = ({
                 onClick={() => fileInputRef.current?.click()}
                 className={`inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                   darkMode
-                    ? "bg-[#378CCC] hover:bg-[#378CCC] text-white"
-                    : "bg-[#378CCC] hover:bg-[#378CCC] text-white"
+                    ? "bg-[#3390d5] hover:bg-[#3390d5] text-white"
+                    : "bg-[#3390d5] hover:bg-[#3390d5] text-white"
                 }`}
               >
                 <FiUpload className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
@@ -596,7 +596,7 @@ const ProfileForm = ({
               loading 
                 ? "opacity-70 cursor-not-allowed" 
                 : "hover:scale-105 shadow-lg hover:shadow-xl"
-            } bg-[#378CCC] hover:bg-[#378CCC] flex items-center justify-center`}
+            } bg-[#3390d5] hover:bg-[#3390d5] flex items-center justify-center`}
           >
             {loading ? (
               <>

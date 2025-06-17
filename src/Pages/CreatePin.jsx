@@ -112,8 +112,8 @@ const CreatePin = () => {
                 }
                 className={`w-full py-2 cursor-pointer sm:py-3 px-4 text-white text-sm sm:text-base font-medium rounded-md ${
                   loading
-                    ? "bg-[#378CCC]"
-                    : "bg-[#378CCC] hover:bg-[#378CCC]"
+                    ? "bg-[#3390d5]"
+                    : "bg-[#3390d5] hover:bg-[#3390d5]"
                 } transition-colors duration-200`}
               >
                 {loading
@@ -128,7 +128,7 @@ const CreatePin = () => {
                   type="button"
                   onClick={() => setStep(1)}
                   disabled={loading}
-                  className="w-full cursor-pointer text-center text-[#378CCC] hover:text-[#378CCC] text-sm sm:text-base font-medium transition-colors duration-200"
+                  className="w-full cursor-pointer text-center text-[#3390d5] hover:text-[#3390d5] text-sm sm:text-base font-medium transition-colors duration-200"
                 >
                   Back to create PIN
                 </button>

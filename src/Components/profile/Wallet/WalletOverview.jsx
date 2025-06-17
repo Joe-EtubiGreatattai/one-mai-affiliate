@@ -30,7 +30,7 @@ const WalletOverview = ({
           className={`relative p-4 md:p-8 md:rounded-2xl overflow-hidden ${
             darkMode
               ? "bg-slate-900 md:bg-gradient-to-br md:from-slate-800 md:via-slate-900 md:to-black"
-              : "bg-[#378CCC] md:bg-gradient-to-br md:from-blue-600 md:via-indigo-700 md:to-purple-800"
+              : "bg-[#3390d5] md:bg-gradient-to-br md:from-blue-600 md:via-indigo-700 md:to-purple-800"
           } shadow-xl md:shadow-2xl`}
         >
           {/* Card Background Pattern - Only on desktop */}
@@ -98,8 +98,8 @@ const WalletOverview = ({
             }`}
           >
             <div className="flex items-center justify-center space-x-3">
-              <div className={`p-1.5 md:p-2 rounded-lg md:rounded-xl ${darkMode ? "bg-[#378CCC]" : "bg-blue-100"}`}>
-                <FiArrowUp className={`h-4 w-4 md:h-5 md:w-5 ${darkMode ? "text-white" : "text-[#378CCC]"}`} />
+              <div className={`p-1.5 md:p-2 rounded-lg md:rounded-xl ${darkMode ? "bg-[#3390d5]" : "bg-blue-100"}`}>
+                <FiArrowUp className={`h-4 w-4 md:h-5 md:w-5 ${darkMode ? "text-white" : "text-[#3390d5]"}`} />
               </div>
               <div className="text-center md:text-left">
                 <p className="font-semibold text-base md:text-lg">Request Payout</p>
@@ -137,8 +137,8 @@ const WalletOverview = ({
           <button
             className={`flex items-center space-x-1 md:space-x-2 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm transition-all duration-200 ${
               darkMode
-                ? "bg-slate-700 hover:bg-slate-600 text-[#378CCC]"
-                : "bg-blue-50 hover:bg-blue-100 text-[#378CCC]"
+                ? "bg-slate-700 hover:bg-slate-600 text-[#3390d5]"
+                : "bg-blue-50 hover:bg-blue-100 text-[#3390d5]"
             } focus:outline-none focus:ring-2 focus:ring-blue-500`}
             onClick={() => getTransactions()}
           >

@@ -87,7 +87,7 @@ function App() {
 
       {/* PWA Install Banner - Updated to top with less height */}
       {/* {showBanner && (
-        <div className="fixed top-0 left-0 right-0 bg-[#378CCC] text-white p-2 z-50 shadow-md">
+        <div className="fixed top-0 left-0 right-0 bg-[#3390d5] text-white p-2 z-50 shadow-md">
           <div className="container mx-auto flex justify-between items-center">
             <div className="text-sm">
               <h3 className="font-bold text-base">Install Our App</h3>
@@ -98,13 +98,13 @@ function App() {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowBanner(false)}
-                className="px-3 py-1 bg-white text-[#378CCC] rounded text-sm"
+                className="px-3 py-1 bg-white text-[#3390d5] rounded text-sm"
               >
                 Later
               </button>
               <button
                 onClick={triggerInstall}
-                className="px-3 py-1 bg-white text-[#378CCC] rounded font-bold text-sm"
+                className="px-3 py-1 bg-white text-[#3390d5] rounded font-bold text-sm"
               >
                 Install
               </button>

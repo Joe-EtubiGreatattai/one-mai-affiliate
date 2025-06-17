@@ -27,7 +27,7 @@ export const getNotificationIcon = (type) => {
     "group-update": {
       icon: <FiUsers size={iconSize} aria-hidden="true" />,
       bg: "bg-blue-100",
-      text: "text-[#378CCC]",
+      text: "text-[#3390d5]",
       ariaLabel: "Group update"
     },
     "app-update": {
@@ -96,7 +96,7 @@ export const NotificationIcon = ({ type, size = "md" }) => {
     "group-update": {
       icon: FiUsers,
       bg: "bg-blue-100",
-      text: "text-[#378CCC]",
+      text: "text-[#3390d5]",
     },
     "app-update": {
       icon: FiDownload,

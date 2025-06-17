@@ -16,7 +16,7 @@ const CheckYourMail = () => {
           {/* Mail Icon */}
           <div className="flex justify-center mb-4 sm:mb-6">
             <div className="bg-blue-100 p-3 sm:p-4 rounded-full">
-              <FiMail className="text-[#378CCC] text-3xl sm:text-4xl" />
+              <FiMail className="text-[#3390d5] text-3xl sm:text-4xl" />
             </div>
           </div>
 
@@ -41,14 +41,14 @@ const CheckYourMail = () => {
           <div className="flex flex-col space-y-3 sm:space-y-4">
             <Link
               to="/signin"
-              className="w-full py-2 sm:py-3 px-4 bg-[#378CCC] text-white text-sm sm:text-base font-medium rounded-lg hover:bg-[#378CCC] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center transition-colors"
+              className="w-full py-2 sm:py-3 px-4 bg-[#3390d5] text-white text-sm sm:text-base font-medium rounded-lg hover:bg-[#3390d5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center transition-colors"
             >
               Back to Sign In
             </Link>
 
             <p className="text-xs sm:text-sm text-gray-500">
               Didn't receive the email?{' '}
-              <button className="text-[#378CCC] hover:text-[#378CCC] font-medium focus:outline-none">
+              <button className="text-[#3390d5] hover:text-[#3390d5] font-medium focus:outline-none">
                 Resend
               </button>
             </p>
@@ -58,7 +58,7 @@ const CheckYourMail = () => {
 
       {/* Optional Footer */}
       <div className="mt-8 sm:mt-12 text-center text-xs sm:text-sm text-gray-500">
-        Need help? <Link to="/contact" className="text-[#378CCC] hover:text-[#378CCC]">Contact support</Link>
+        Need help? <Link to="/contact" className="text-[#3390d5] hover:text-[#3390d5]">Contact support</Link>
       </div>
     </div>
   );

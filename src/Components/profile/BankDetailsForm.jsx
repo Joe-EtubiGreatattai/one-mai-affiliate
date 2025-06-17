@@ -52,7 +52,7 @@ const Modal = ({ isOpen, onClose, children, size = "md", title }) => {
         {title && (
           <div className="flex items-center justify-between p-3 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center">
-              <FiCreditCard className="mr-2 sm:mr-3 text-[#378CCC]" size={20} />
+              <FiCreditCard className="mr-2 sm:mr-3 text-[#3390d5]" size={20} />
               <span className="text-sm sm:text-xl">{title}</span>
             </h2>
             <button
@@ -390,7 +390,8 @@ const BankDetailsForm = ({
         
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl text-sm sm:text-base w-full sm:w-auto"
+          className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-[#3390d5] text-white rounded-lg sm:rounded-xl hover:bg-[#2e7ab3] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl text-sm sm:text-base w-full sm:w-auto"
+          style={{ background: "#3390d5" }}
         >
           <FiPlus className="mr-2" size={16} />
           <span className="text-sm sm:text-base">Add Account</span>
@@ -410,7 +411,7 @@ const BankDetailsForm = ({
                 <div className="flex justify-between items-start mb-3 sm:mb-4">
                   <div className="flex items-center">
                     <div className="bg-blue-100 p-2 sm:p-3 rounded-lg sm:rounded-xl mr-2 sm:mr-4">
-                      <FiCreditCard className="text-[#378CCC]" size={20} />
+                      <FiCreditCard className="text-[#3390d5]" size={20} />
                     </div>
                     <div>
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900">
@@ -496,7 +497,7 @@ const BankDetailsForm = ({
                 {/* Action Buttons - Uncomment when needed */}
                 {/* 
                 <div className="flex justify-end space-x-3 pt-6 mt-6 border-t border-gray-100">
-                  <button className="p-3 text-gray-500 hover:text-[#378CCC] hover:bg-blue-50 rounded-xl transition-all duration-200">
+                  <button className="p-3 text-gray-500 hover:text-[#3390d5] hover:bg-blue-50 rounded-xl transition-all duration-200">
                     <FiEdit2 size={18} />
                   </button>
                   <button className="p-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">

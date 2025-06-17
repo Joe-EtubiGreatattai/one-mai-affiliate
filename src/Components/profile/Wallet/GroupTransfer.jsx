@@ -131,8 +131,8 @@ const GroupTransfer = ({
           type="submit"
           className={`w-full py-3 px-4 rounded-lg font-medium transition flex items-center justify-center ${
             darkMode 
-              ? 'bg-[#378CCC] hover:bg-[#378CCC] text-white' 
-              : 'bg-[#378CCC] hover:bg-[#378CCC] text-white'
+              ? 'bg-[#3390d5] hover:bg-[#3390d5] text-white' 
+              : 'bg-[#3390d5] hover:bg-[#3390d5] text-white'
           } ${walletLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
           disabled={walletLoading || !isGroupMember || !selectedGroupId}
         >

@@ -167,8 +167,8 @@ const DepositWithdraw = ({
               type="submit"
               className={`w-full py-3 rounded-lg shadow transition ${
                 darkMode
-                  ? "bg-[#378CCC] hover:bg-[#378CCC]"
-                  : "bg-[#378CCC] hover:bg-[#378CCC]"
+                  ? "bg-[#3390d5] hover:bg-[#3390d5]"
+                  : "bg-[#3390d5] hover:bg-[#3390d5]"
               } text-white`}
             >
               Request Withdrawal

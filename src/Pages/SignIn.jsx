@@ -128,8 +128,8 @@ const SignIn = () => {
                 disabled={loading || pin.some((digit) => !digit)}
                 className={`w-full py-3 px-4 text-white font-medium rounded-md ${
                   loading
-                    ? "bg-[#378CCC]"
-                    : "bg-[#378CCC] hover:bg-[#378CCC]"
+                    ? "bg-[#3390d5]"
+                    : "bg-[#3390d5] hover:bg-[#3390d5]"
                 }`}
               >
                 {loading ? "Verifying..." : "Verify PIN"}
@@ -226,7 +226,7 @@ const SignIn = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 text-[#378CCC] focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[#3390d5] focus:ring-blue-500 border-gray-300 rounded"
                     disabled={loading}
                   />
                   <label
@@ -238,7 +238,7 @@ const SignIn = () => {
                 </div>
                 <Link
                   to="/reset-password"
-                  className="text-sm font-medium text-[#378CCC] hover:text-[#378CCC] whitespace-nowrap"
+                  className="text-sm font-medium text-[#3390d5] hover:text-[#3390d5] whitespace-nowrap"
                 >
                   Forgot password?
                 </Link>
@@ -249,8 +249,8 @@ const SignIn = () => {
                 disabled={loading}
                 className={`max-sm:mt-4 w-full py-2 px-4 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
                   loading
-                    ? "bg-[#378CCC] cursor-not-allowed"
-                    : "bg-[#378CCC] hover:bg-[#378CCC]"
+                    ? "bg-[#3390d5] cursor-not-allowed"
+                    : "bg-[#3390d5] hover:bg-[#3390d5]"
                 }`}
               >
                 {loading ? (
@@ -288,7 +288,7 @@ const SignIn = () => {
                 Don't have an account?{" "}
                 <Link
                   to="/affilator-create-account"
-                  className="font-medium text-[#378CCC] hover:text-[#378CCC]"
+                  className="font-medium text-[#3390d5] hover:text-[#3390d5]"
                 >
                   Create account
                 </Link>

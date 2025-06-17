@@ -176,7 +176,7 @@ const ResetPassword = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full cursor-pointer py-2 sm:py-3 px-4 bg-[#378CCC] text-white text-sm sm:text-base font-medium rounded-lg hover:bg-[#378CCC] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
+                    className={`w-full cursor-pointer py-2 sm:py-3 px-4 bg-[#3390d5] text-white text-sm sm:text-base font-medium rounded-lg hover:bg-[#3390d5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
                       loading ? "opacity-70 cursor-not-allowed" : ""
                     }`}
                   >
@@ -212,7 +212,7 @@ const ResetPassword = () => {
                   <div className="text-center">
                     <Link
                       to="/signin"
-                      className="text-[#378CCC] hover:text-[#378CCC] text-sm sm:text-base font-medium transition-colors"
+                      className="text-[#3390d5] hover:text-[#3390d5] text-sm sm:text-base font-medium transition-colors"
                     >
                       Back to Sign In
                     </Link>

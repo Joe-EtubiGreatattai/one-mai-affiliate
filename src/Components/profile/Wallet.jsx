@@ -206,8 +206,8 @@ const Wallet = ({ darkMode }) => {
               className={`px-3 py-2 text-sm md:text-base md:px-4 md:py-2 font-medium whitespace-nowrap ${
                 activeTab === tab
                   ? darkMode
-                    ? "text-[#378CCC] border-b-2 border-blue-400"
-                    : "text-[#378CCC] border-b-2 border-blue-600"
+                    ? "text-[#3390d5] border-b-2 border-blue-400"
+                    : "text-[#3390d5] border-b-2 border-blue-600"
                   : darkMode
                   ? "text-gray-400 hover:text-gray-300"
                   : "text-gray-500 hover:text-gray-700"
