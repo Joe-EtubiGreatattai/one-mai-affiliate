@@ -28,6 +28,8 @@ import Layout from "./Components/Layout";
 import DashboardLayout from "./Components/DashboardLayout";
 import AffiliateRegistration from "./Components/AffilateUser/AffiliateRegistration";
 import ProfilePage from "./Components/profile/ProfilePage";
+import TermAndCondition from "./Pages/TermAndCondition";
+import Privacy from "./Pages/Privacy";
 // Auth Protected Route Component
 const ProtectedRoute = () => {
   const { user } = useAuthStore();
@@ -129,6 +131,9 @@ function App() {
             path="/affilator-create-account"
             element={<AffiliateRegistration />}
           />
+           <Route path="/terms" element={<TermAndCondition />} />
+          <Route path="/privacy" element={<Privacy />} />
+         
         </Route>
 
         <Route element={<ProtectedRoute />}>

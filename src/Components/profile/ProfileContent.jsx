@@ -16,6 +16,7 @@ const ProfileContent = ({
   userWallet,
   accounts,
   transactions,
+  isLoading,
 }) => {
   const renderContent = () => {
     switch (activeTab) {
@@ -27,6 +28,7 @@ const ProfileContent = ({
             darkMode={darkMode}
             setError={setError}
             setSuccess={setSuccess}
+            isLoading={isLoading}
           />
         );
       case "security":
@@ -36,6 +38,7 @@ const ProfileContent = ({
             darkMode={darkMode}
             setError={setError}
             setSuccess={setSuccess}
+            isLoading={isLoading}
           />
         );
       case "notifications":
@@ -47,6 +50,7 @@ const ProfileContent = ({
             accounts={accounts}
             setError={setError}
             setSuccess={setSuccess}
+            isLoading={isLoading}
           />
         );
       case "wallet":
@@ -58,6 +62,7 @@ const ProfileContent = ({
             transactions={transactions}
             setError={setError}
             setSuccess={setSuccess}
+            isLoading={isLoading}
           />
         );
       default:
@@ -68,6 +73,7 @@ const ProfileContent = ({
             darkMode={darkMode}
             setError={setError}
             setSuccess={setSuccess}
+            isLoading={isLoading}
           />
         );
     }

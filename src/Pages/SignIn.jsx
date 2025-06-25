@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import Family from "../assets/Family.jpeg";
 import useAuthStore from "../Store/Auth";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+
+import Img1 from "../assets/Family.jpeg";
+import Img2 from "../assets/Family.jpeg"; // Add more images if available
+import Img3 from "../assets/Family.jpeg";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -36,7 +41,7 @@ const SignIn = () => {
     if (authError) {
       setError(authError);
     }
-  }, [authError, setError]);
+  }, [authError]);
 
   const handlePinChange = (e, index) => {
     const value = e.target.value;
@@ -57,7 +62,6 @@ const SignIn = () => {
 
     try {
       await verifyPin(pin.join(""));
-      // Navigation happens automatically via the useEffect watching user state
     } catch (error) {
       console.error("PIN verification error:", error);
       setError(error.message || "PIN verification failed");
@@ -85,27 +89,23 @@ const SignIn = () => {
     }
   };
 
+  const handleGoogleSignIn = () => {
+    console.log("Google Sign-in clicked"); // Replace with actual Google login
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* PIN Verification Modal */}
       {showPinModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Verify Your Identity
-              </h2>
-              <p className="text-gray-600">
-                Enter your 4-digit PIN to continue
-              </p>
-            </div>
-
+            <h2 className="text-2xl font-bold mb-4 text-center">
+              Verify Your Identity
+            </h2>
             {error && (
               <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
                 {error}
               </div>
             )}
-
             <form onSubmit={handlePinSubmit} className="space-y-6">
               <div className="flex justify-center space-x-4">
                 {[0, 1, 2, 3].map((index) => (
@@ -122,14 +122,11 @@ const SignIn = () => {
                   />
                 ))}
               </div>
-
               <button
                 type="submit"
                 disabled={loading || pin.some((digit) => !digit)}
                 className={`w-full py-3 px-4 text-white font-medium rounded-md ${
-                  loading
-                    ? "bg-[#3390d5]"
-                    : "bg-[#3390d5] hover:bg-[#3390d5]"
+                  loading ? "bg-[#3390d5]" : "bg-[#3390d5] hover:bg-[#2570b5]"
                 }`}
               >
                 {loading ? "Verifying..." : "Verify PIN"}
@@ -139,16 +136,12 @@ const SignIn = () => {
         </div>
       )}
 
-      {/* Left Column - Sign In Form */}
+      {/* Sign In Form */}
       <div className="w-full md:w-1/2 sm:bg-white flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8">
         <div className="w-full max-w-md space-y-6 sm:space-y-8">
           <div className="text-center">
-            <h2 className="text-2xl max-sm:text-start sm:text-3xl font-semibold sm:font-bold text-gray-900 mb-1 sm:mb-2">
-              Sign In
-            </h2>
-            <p className="text-base sm:text-lg max-sm:text-start max-sm:text-sm text-gray-500">
-              Hey User, Welcome Back We've Missed You!
-            </p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
+            <p className="text-lg text-gray-500">Welcome back! We missed you.</p>
           </div>
 
           {error && (
@@ -157,167 +150,124 @@ const SignIn = () => {
             </div>
           )}
 
-          <div className="sm:bg-white sm:p-8 rounded-lg sm:shadow-md">
-            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Email address
-                </label>
+          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter Email"
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
+              <div className="relative">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter Email"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="••••••••"
                   disabled={loading}
                 />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={loading}
                 >
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
-                    placeholder="••••••••"
-                    disabled={loading}
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                    disabled={loading}
-                  >
-                    {showPassword ? (
-                      <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <EyeIcon className="h-5 w-5 text-gray-500" />
-                    )}
-                  </button>
-                </div>
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
               </div>
-
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 text-[#3390d5] focus:ring-blue-500 border-gray-300 rounded"
-                    disabled={loading}
-                  />
-                  <label
-                    htmlFor="remember-me"
-                    className="ml-2 text-sm text-gray-700"
-                  >
-                    Remember me
-                  </label>
-                </div>
-                <Link
-                  to="/reset-password"
-                  className="text-sm font-medium text-[#3390d5] hover:text-[#3390d5] whitespace-nowrap"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className={`max-sm:mt-4 w-full py-2 px-4 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
-                  loading
-                    ? "bg-[#3390d5] cursor-not-allowed"
-                    : "bg-[#3390d5] hover:bg-[#3390d5]"
-                }`}
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Signing in...
-                  </span>
-                ) : (
-                  "Sign in"
-                )}
-              </button>
-            </form>
-
-            <div className="mt-4 sm:mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
-                <Link
-                  to="/affilator-create-account"
-                  className="font-medium text-[#3390d5] hover:text-[#3390d5]"
-                >
-                  Create account
-                </Link>
-              </p>
             </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Remember me
+              </label>
+              <Link to="/reset-password" className="text-sm text-[#3390d5]">
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2 px-4 bg-[#3390d5] text-white font-medium rounded-md hover:bg-[#2570b5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </button>
+
+            {/* 🔵 Google Sign-in */}
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              className="w-full mt-3 py-2 px-4 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 flex items-center justify-center"
+            >
+              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5 mr-2" />
+              Sign in with Google
+            </button>
+          </form>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link to="/affilator-create-account" className="font-medium text-[#3390d5]">
+                Create account
+              </Link>
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Right Column - Image */}
-      <div className="hidden md:flex md:w-1/2 relative bg-gray-100">
-        <img
-          src={Family}
-          alt="Family enjoying financial freedom"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-[#00182b] opacity-40"></div>
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 lg:p-8 text-white">
-          <div className="max-w-md mx-auto text-center">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">
-              Welcome to MAI
-            </h2>
-            <p className="text-base sm:text-lg leading-relaxed">
-              Join forces with friends and family to save for your dreams! Our
-              fun and intuitive group savings app makes pooling funds easy,
-              exciting, and rewarding.
-            </p>
-          </div>
-        </div>
+      {/* Right Column - Image Carousel */}
+      <div className="hidden md:flex md:w-1/2 bg-gray-100">
+        <Carousel
+          autoPlay
+          infiniteLoop
+          showThumbs={false}
+          showStatus={false}
+          interval={4000}
+          transitionTime={600}
+        >
+          {[Img1, Img2, Img3].map((img, idx) => (
+            <div key={idx} className="relative h-full">
+              <img src={img} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-[#00182b] opacity-40" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white bg-gradient-to-t from-black/70 to-transparent">
+                <h2 className="text-xl sm:text-2xl font-bold">Welcome to MAI</h2>
+                <p className="text-sm sm:text-base mt-1">
+                  Join forces with friends and family to save for your dreams! Our group savings app makes pooling easy and fun.
+                </p>
+              </div>
+            </div>
+          ))}
+        </Carousel>
       </div>
     </div>
   );
