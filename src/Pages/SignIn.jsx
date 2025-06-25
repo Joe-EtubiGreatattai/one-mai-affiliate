@@ -4,6 +4,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import useAuthStore from "../Store/Auth";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
+import { auth, provider, signInWithPopup } from "../firebase";
 
 import Img1 from "../assets/Family.jpeg";
 import Img2 from "../assets/Family.jpeg"; // Add more images if available
@@ -89,9 +90,21 @@ const SignIn = () => {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log("Google Sign-in clicked"); // Replace with actual Google login
-  };
+const handleGoogleSignIn = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    // Optional: Call your backend API to log in or create the user
+    console.log("Google user:", user);
+
+    // Redirect or set user state
+    navigate("/dashboard");
+  } catch (err) {
+    console.error("Google sign-in failed", err);
+    setError("Google sign-in failed. Try again.");
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
