@@ -123,7 +123,7 @@ function HomePage() {
 
         <div className="relative z-10 flex justify-between flex-col h-full">
           <h1 className="text-4xl md:text-[52px] font-normal text-white mb-3 sm:mb-4 md:mb-6 w-[300px]">
-            A community Approach to Saving for all Pocket Sizes
+            A Community Approach to Saving for all Pocket Sizes
           </h1>
 
           <div className="flex flex-col gap-2 w-full items-center justify-center">
