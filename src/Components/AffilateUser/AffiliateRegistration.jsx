@@ -5,9 +5,9 @@ import "react-phone-number-input/style.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 
-import Img1 from "../../assets/Family.jpeg";
-import Img2 from "../../assets/Family.jpeg";
-import Img3 from "../../assets/Family.jpeg";
+import Img1 from "../../assets/0.jpg";
+import Img2 from "../../assets/1.jpg";
+import Img3 from "../../assets/3.jpg";
 
 import useAuthStore from "../../Store/Auth";
 
@@ -65,27 +65,50 @@ function AffiliateRegistration() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      await initiateSignup({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phoneNumber: formData.phone,
-        password: formData.password,
-        userType: "affiliate",
-      });
+  const isValid = validateForm();
 
-      navigate("/otp", {
-        state: { signupData: { ...formData } },
-      });
-    } catch (error) {
-      console.error("Signup error:", error);
+  // If not valid and checkbox is unticked, show an alert
+  if (!isValid) {
+    if (!formData.agreed) {
+      alert('Please tick the checkbox to agree to the Terms and Conditions and Privacy Policy before signing up.');
+      const checkbox = document.getElementById('agreed');
+      if (checkbox) checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  };
+    return;
+  }
+
+  try {
+    const fullPhone = `${selectedCountry.dialCode}${formData.phone}`;
+
+    await initiateSignup({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phoneNumber: fullPhone,
+      password: formData.password,
+      userType: 'affiliate',
+    });
+
+    navigate('/otp', {
+      state: {
+        signupData: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phoneNumber: fullPhone,
+          password: formData.password,
+          userType: 'affiliate',
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Signup error:', error);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
@@ -229,25 +252,31 @@ function AffiliateRegistration() {
       </div>
 
       {/* Right - Image Carousel with Benefits Text */}
-      <div className="hidden md:flex md:w-1/2 bg-gray-100 relative">
+      <div className="hidden md:block md:w-1/2 relative">
+       <div className="h-screen w-full">
         <Carousel
-          autoPlay
-          infiniteLoop
-          showThumbs={false}
-          showStatus={false}
-          interval={4000}
-          transitionTime={600}
+            autoPlay
+            infiniteLoop
+            showThumbs={false}
+            showStatus={false}
+           
+            showArrows={false}
+            interval={5000}
+            transitionTime={800}
+            swipeable
+            emulateTouch
+            className="h-full"
         >
           {[Img1, Img2, Img3].map((img, idx) => (
-            <div key={idx} className="relative h-full">
+            <div key={idx} className="h-screen relative">
               <img src={img} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-[#00182b] opacity-40" />
               <div className="absolute top-0 bottom-0 left-0 right-0 flex flex-col justify-center items-center px-6 text-white">
                 <div className="max-w-lg text-center">
                   <h2 className="text-3xl font-bold mb-4">Join OneMAIX</h2>
-                  <p className="text-lg mb-6">
+                  {/* <p className="text-lg mb-6">
                     Join OneMAIX and earn commissions by referring friends and family. Get access to marketing tools and real-time analytics.
-                  </p>
+                  </p> */}
                   <div className="space-y-3 text-left text-sm sm:text-base">
                     {[
                       "✅ Competitive commission rates",
@@ -263,6 +292,7 @@ function AffiliateRegistration() {
             </div>
           ))}
         </Carousel>
+        </div>
       </div>
     </div>
   );

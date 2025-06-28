@@ -4,11 +4,12 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import useAuthStore from "../Store/Auth";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
-import { auth, provider, signInWithPopup } from "../firebase";
+import GoogleAuthButton from "../Components/GoogleAuthButton";
 
-import Img1 from "../assets/Family.jpeg";
-import Img2 from "../assets/Family.jpeg"; // Add more images if available
-import Img3 from "../assets/Family.jpeg";
+import Image1 from "../assets/0.jpg";
+import Image2 from "../assets/1.jpg";
+import Image3 from "../assets/2.jpg";
+import Image4 from "../assets/3.jpg";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -90,21 +91,21 @@ const SignIn = () => {
     }
   };
 
-const handleGoogleSignIn = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
-    // Optional: Call your backend API to log in or create the user
-    console.log("Google user:", user);
+      // Optional: Call your backend API to log in or create the user
+      console.log("Google user:", user);
 
-    // Redirect or set user state
-    navigate("/dashboard");
-  } catch (err) {
-    console.error("Google sign-in failed", err);
-    setError("Google sign-in failed. Try again.");
-  }
-};
+      // Redirect or set user state
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Google sign-in failed", err);
+      setError("Google sign-in failed. Try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -138,9 +139,8 @@ const handleGoogleSignIn = async () => {
               <button
                 type="submit"
                 disabled={loading || pin.some((digit) => !digit)}
-                className={`w-full py-3 px-4 text-white font-medium rounded-md ${
-                  loading ? "bg-[#3390d5]" : "bg-[#3390d5] hover:bg-[#2570b5]"
-                }`}
+                className={`w-full py-3 px-4 text-white font-medium rounded-md ${loading ? "bg-[#3390d5]" : "bg-[#3390d5] hover:bg-[#2570b5]"
+                  }`}
               >
                 {loading ? "Verifying..." : "Verify PIN"}
               </button>
@@ -237,14 +237,7 @@ const handleGoogleSignIn = async () => {
             </button>
 
             {/* 🔵 Google Sign-in */}
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              className="w-full mt-3 py-2 px-4 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 flex items-center justify-center"
-            >
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5 mr-2" />
-              Sign in with Google
-            </button>
+            <GoogleAuthButton buttonText="Sign in with Google" />
           </form>
 
           <div className="text-center">
@@ -258,29 +251,49 @@ const handleGoogleSignIn = async () => {
         </div>
       </div>
 
-      {/* Right Column - Image Carousel */}
-      <div className="hidden md:flex md:w-1/2 bg-gray-100">
-        <Carousel
-          autoPlay
-          infiniteLoop
-          showThumbs={false}
-          showStatus={false}
-          interval={4000}
-          transitionTime={600}
-        >
-          {[Img1, Img2, Img3].map((img, idx) => (
-            <div key={idx} className="relative h-full">
-              <img src={img} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-[#00182b] opacity-40" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white bg-gradient-to-t from-black/70 to-transparent">
-                <h2 className="text-xl sm:text-2xl font-bold">Welcome to MAI</h2>
-                <p className="text-sm sm:text-base mt-1">
-                  Join forces with friends and family to save for your dreams! Our group savings app makes pooling easy and fun.
-                </p>
+      {/* Right Column - Full Screen Carousel */}
+      <div className="hidden md:block md:w-1/2 relative">
+        <div className="h-screen w-full">
+          <Carousel
+            autoPlay
+            infiniteLoop
+            showThumbs={false}
+            showStatus={false}
+            showIndicators={false}
+            showArrows={false}
+            interval={5000}
+            transitionTime={800}
+            swipeable
+            emulateTouch
+            className="h-full"
+          >
+            {[Image1, Image2, Image3, Image4].map((src, idx) => (
+              <div key={idx} className="h-screen relative">
+                <img
+                  src={src}
+                  alt={`Slide ${idx + 1}`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-[#00182b] opacity-40"></div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 lg:p-8 text-white">
+                  <div className="max-w-md mx-auto text-center">
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-1">
+                      OneMAI
+                    </h2>
+                    <div className="text-base sm:text-lg font-medium mb-2">
+                      Group Power. Personal Gains
+                    </div>
+                    {/* <p className="text-base sm:text-lg leading-relaxed">
+                      Save for your dreams!
+                      Our fun and intuitive group savings app makes pooling funds
+                      easy, exciting, and rewarding.
+                    </p> */}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-        </Carousel>
+            ))}
+          </Carousel>
+        </div>
       </div>
     </div>
   );

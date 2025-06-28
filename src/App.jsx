@@ -30,6 +30,7 @@ import AffiliateRegistration from "./Components/AffilateUser/AffiliateRegistrati
 import ProfilePage from "./Components/profile/ProfilePage";
 import TermAndCondition from "./Pages/TermAndCondition";
 import Privacy from "./Pages/Privacy";
+import Support from "./Pages/Support";
 // Auth Protected Route Component
 const ProtectedRoute = () => {
   const { user } = useAuthStore();
@@ -133,6 +134,7 @@ function App() {
           />
            <Route path="/terms" element={<TermAndCondition />} />
           <Route path="/privacy" element={<Privacy />} />
+            <Route path="/support" element={<Support />} />
          
         </Route>
 
