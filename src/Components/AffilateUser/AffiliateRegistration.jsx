@@ -4,6 +4,7 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
+import GoogleAuthButton from "../../Components/GoogleAuthButton";
 
 import Img1 from "../../assets/0.jpg";
 import Img2 from "../../assets/1.jpg";
@@ -239,9 +240,12 @@ const handleSubmit = async (e) => {
             disabled={loading}
             className="w-full py-2 px-4 bg-[#3390D5] text-white font-medium rounded-md hover:bg-[#2570b5] transition"
           >
-            {loading ? "Creating Account..." : "Join Affiliate Program"}
+            {loading ? "Creating Account..." : "Join OneMAIX"}
           </button>
+           {/* 🔵 Google Sign-in */}
+            <GoogleAuthButton buttonText="Sign in with Google" />
         </form>
+
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
