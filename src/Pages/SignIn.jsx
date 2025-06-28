@@ -154,7 +154,7 @@ const SignIn = () => {
         <div className="w-full max-w-md space-y-6 sm:space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
-            <p className="text-lg text-gray-500">Welcome back! We missed you.</p>
+            <p className="text-lg text-gray-500">Welcome back! OneMAIX.</p>
           </div>
 
           {error && (
