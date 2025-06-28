@@ -25,7 +25,7 @@ const DashboardLayout = () => {
             <RecentTransactions />
           </div>
         </div>
-        {/* Language & Support */}
+        {/* Language & Support
         <div className="flex flex-col lg:flex-row gap-4 mt-5 mb-1">
           <div className="w-full lg:w-1/2">
             <LanguageOptions />
@@ -33,7 +33,7 @@ const DashboardLayout = () => {
           <div className="w-full lg:w-1/2">
             <ContactSupport />
           </div>
-        </div>
+        </div> */}
 
         {/* Referals section */}
         <div className="mt-6 mb-8 w-full">
