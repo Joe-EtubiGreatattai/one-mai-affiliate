@@ -7,24 +7,38 @@ import toast from "react-hot-toast";
 import useAuthStore from "../Store/Auth";
 
 const firebaseConfig = {
- apiKey: "AIzaSyCY51lvldbdFmzYUZdHcu2zTRwXYX-ulfM",
-  authDomain: "onemai.firebaseapp.com",
-  projectId: "onemai",
-  storageBucket: "onemai.firebasestorage.app",
-  messagingSenderId: "1019371957199",
-  appId: "1:1019371957199:web:090ada796482f09c4c80ba",
-  measurementId: "G-D5Q20LBNG9"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCY51lvldbdFmzYUZdHcu2zTRwXYX-ulfM",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "onemai.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "onemai",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "onemai.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1019371957199",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1019371957199:web:090ada796482f09c4c80ba",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-D5Q20LBNG9"
 };
 
 console.log("🔥 Firebase config initialized:", {
   projectId: firebaseConfig.projectId,
-  authDomain: firebaseConfig.authDomain
+  authDomain: firebaseConfig.authDomain,
+  environment: import.meta.env.MODE,
+  hasApiKey: !!firebaseConfig.apiKey,
+  hasAppId: !!firebaseConfig.appId,
+  fullConfig: firebaseConfig
 });
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+let app, auth;
 
-console.log("🔥 Firebase app and auth initialized successfully");
+try {
+  app = initializeApp(firebaseConfig);
+  console.log("✅ Firebase app initialized successfully");
+  
+  auth = getAuth(app);
+  console.log("✅ Firebase auth initialized successfully");
+} catch (initError) {
+  console.error("💥 Firebase initialization failed:", initError);
+  throw initError;
+}
+
+
 
 const GoogleAuthButton = ({ buttonText = "Continue with Google" }) => {
   const { login, initiateSignup } = useAuthStore();
