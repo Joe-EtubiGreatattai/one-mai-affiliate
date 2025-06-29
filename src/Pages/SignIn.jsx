@@ -152,9 +152,13 @@ const SignIn = () => {
       {/* Sign In Form */}
       <div className="w-full md:w-1/2 sm:bg-white flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8">
         <div className="w-full max-w-md space-y-6 sm:space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
-            <p className="text-lg text-gray-500">Welcome back! OneMAIX.</p>
+          <div className="text-left sm:text-center">
+            <h2 className="text-2xl max-sm:text-start sm:text-3xl font-semibold sm:font-bold text-gray-900 mb-1 sm:mb-2">
+              Sign In
+            </h2>
+            <p className="text-base sm:text-lg max-sm:text-start max-sm:text-sm text-gray-500">
+              Welcome Back We've Missed You!
+            </p>
           </div>
 
           {error && (
