@@ -131,7 +131,7 @@ function HomePage() {
               className="h-12 w-full flex items-center justify-center p-4 rounded-sm font-bold text-[#1F2937] 
                       text-base sm:text-lg bg-white transition-all 
                       shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate("/affilator-create-account")}
             >
               Create Account
             </button>
