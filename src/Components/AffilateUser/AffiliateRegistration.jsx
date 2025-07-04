@@ -274,25 +274,7 @@ const handleSubmit = async (e) => {
           {[Img1, Img2, Img3].map((img, idx) => (
             <div key={idx} className="h-screen relative">
               <img src={img} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-[#00182b] opacity-40" />
-              <div className="absolute top-0 bottom-0 left-0 right-0 flex flex-col justify-center items-center px-6 text-white">
-                <div className="max-w-lg text-center">
-                  <h2 className="text-3xl font-bold mb-4">Join OneMAIX</h2>
-                  {/* <p className="text-lg mb-6">
-                    Join OneMAIX and earn commissions by referring friends and family. Get access to marketing tools and real-time analytics.
-                  </p> */}
-                  <div className="space-y-3 text-left text-sm sm:text-base">
-                    {[
-                      "✅ Competitive commission rates",
-                      "✅ Monthly payout options",
-                      "✅ Dedicated affiliate support",
-                      "✅ Marketing materials provided",
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-start">{item}</div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            
             </div>
           ))}
         </Carousel>
