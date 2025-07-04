@@ -114,170 +114,181 @@ const handleSubmit = async (e) => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
       {/* Left - Form */}
-      <div className="flex-1 w-full p-6 sm:p-10 xl:p-16 flex flex-col justify-center">
-        <h2 className="text-3xl font-bold text-[#2E2E2E] mb-2">Become an affiliate</h2>
-        <p className="text-sm text-[#9A9A9A] mb-6">
-          Please provide us with your basic details below so that we can get to know you better.
-        </p>
-
-        {authError && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200">
-            {authError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-[#2E2E2E] mb-1">First Name*</label>
-              <input
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${
-                  formErrors.firstName ? "border-red-500" : "border-[#EAEAEA]"
-                }`}
-                placeholder="John"
-              />
-              {formErrors.firstName && <p className="text-sm text-red-600">{formErrors.firstName}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Last Name*</label>
-              <input
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${
-                  formErrors.lastName ? "border-red-500" : "border-[#EAEAEA]"
-                }`}
-                placeholder="Doe"
-              />
-              {formErrors.lastName && <p className="text-sm text-red-600">{formErrors.lastName}</p>}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Email*</label>
-            <input
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md ${
-                formErrors.email ? "border-red-500" : "border-[#EAEAEA]"
-              }`}
-              placeholder="your@email.com"
-            />
-            {formErrors.email && <p className="text-sm text-red-600">{formErrors.email}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Phone Number*</label>
-            <div
-              className={`border p-1.5 rounded-md ${
-                formErrors.phone ? "border-red-500" : "border-[#EAEAEA]"
-              }`}
-            >
-              <PhoneInput
-                international
-                defaultCountry="PT"
-                value={formData.phone}
-                onChange={handlePhoneChange}
-                inputClassName="w-full px-3 py-2"
-              />
-            </div>
-            {formErrors.phone && <p className="text-sm text-red-600">{formErrors.phone}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Password*</label>
-            <input
-              name="password"
-              type={showPassword ? "text" : "password"}
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md ${
-                formErrors.password ? "border-red-500" : "border-[#EAEAEA]"
-              }`}
-              placeholder="••••••••"
-            />
-            {formErrors.password && <p className="text-sm text-red-600">{formErrors.password}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Confirm Password*</label>
-            <input
-              name="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md ${
-                formErrors.confirmPassword ? "border-red-500" : "border-[#EAEAEA]"
-              }`}
-              placeholder="••••••••"
-            />
-            {formErrors.confirmPassword && <p className="text-sm text-red-600">{formErrors.confirmPassword}</p>}
-          </div>
-
-          <div className="flex items-start">
-            <input
-              id="agreed"
-              name="agreed"
-              type="checkbox"
-              checked={formData.agreed}
-              onChange={handleChange}
-              className="h-4 w-4 text-[#3390D5] focus:ring-[#3390D5] border-[#EAEAEA] rounded"
-            />
-            <label htmlFor="agreed" className="ml-2 text-sm text-[#2E2E2E]">
-              I agree to the{" "}
-              <a href="/terms" className="text-[#3390D5]">Terms and Conditions</a> and{" "}
-              <a href="/privacy" className="text-[#3390D5]">Privacy Policy</a>
-            </label>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 px-4 bg-[#3390D5] text-white font-medium rounded-md hover:bg-[#2570b5] transition"
-          >
-            {loading ? "Creating Account..." : "Join OneMAIX"}
-          </button>
-           {/* 🔵 Google Sign-in */}
-            <GoogleAuthButton buttonText="Sign up with Google" />
-        </form>
-
-
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
-            Already an affiliate?{" "}
-            <Link to="/signin" className="font-medium text-[#3390d5]">Sign in</Link>
+      <div className="flex-1 w-full md:w-1/2 p-6 sm:p-10 xl:p-16 flex flex-col justify-center min-h-screen">
+        <div className="w-full max-w-md mx-auto">
+          <h2 className="text-3xl font-bold text-[#2E2E2E] mb-2">Become an affiliate</h2>
+          <p className="text-sm text-[#9A9A9A] mb-6">
+            Please provide us with your basic details below so that we can get to know you better.
           </p>
+
+          {authError && (
+            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200">
+              {authError}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[#2E2E2E] mb-1">First Name*</label>
+                <input
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-2 border rounded-md ${
+                    formErrors.firstName ? "border-red-500" : "border-[#EAEAEA]"
+                  }`}
+                  placeholder="John"
+                />
+                {formErrors.firstName && <p className="text-sm text-red-600">{formErrors.firstName}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Last Name*</label>
+                <input
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-2 border rounded-md ${
+                    formErrors.lastName ? "border-red-500" : "border-[#EAEAEA]"
+                  }`}
+                  placeholder="Doe"
+                />
+                {formErrors.lastName && <p className="text-sm text-red-600">{formErrors.lastName}</p>}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Email*</label>
+              <input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  formErrors.email ? "border-red-500" : "border-[#EAEAEA]"
+                }`}
+                placeholder="your@email.com"
+              />
+              {formErrors.email && <p className="text-sm text-red-600">{formErrors.email}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Phone Number*</label>
+              <div
+                className={`border p-1.5 rounded-md ${
+                  formErrors.phone ? "border-red-500" : "border-[#EAEAEA]"
+                }`}
+              >
+                <PhoneInput
+                  international
+                  defaultCountry="PT"
+                  value={formData.phone}
+                  onChange={handlePhoneChange}
+                  inputClassName="w-full px-3 py-2"
+                />
+              </div>
+              {formErrors.phone && <p className="text-sm text-red-600">{formErrors.phone}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Password*</label>
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  formErrors.password ? "border-red-500" : "border-[#EAEAEA]"
+                }`}
+                placeholder="••••••••"
+              />
+              {formErrors.password && <p className="text-sm text-red-600">{formErrors.password}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#2E2E2E] mb-1">Confirm Password*</label>
+              <input
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  formErrors.confirmPassword ? "border-red-500" : "border-[#EAEAEA]"
+                }`}
+                placeholder="••••••••"
+              />
+              {formErrors.confirmPassword && <p className="text-sm text-red-600">{formErrors.confirmPassword}</p>}
+            </div>
+
+            <div className="flex items-start">
+              <input
+                id="agreed"
+                name="agreed"
+                type="checkbox"
+                checked={formData.agreed}
+                onChange={handleChange}
+                className="h-4 w-4 text-[#3390D5] focus:ring-[#3390D5] border-[#EAEAEA] rounded"
+              />
+              <label htmlFor="agreed" className="ml-2 text-sm text-[#2E2E2E]">
+                I agree to the{" "}
+                <a href="/terms" className="text-[#3390D5]">Terms and Conditions</a> and{" "}
+                <a href="/privacy" className="text-[#3390D5]">Privacy Policy</a>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2 px-4 bg-[#3390D5] text-white font-medium rounded-md hover:bg-[#2570b5] transition"
+            >
+              {loading ? "Creating Account..." : "Join OneMAIX"}
+            </button>
+             {/* 🔵 Google Sign-in */}
+              <GoogleAuthButton buttonText="Sign up with Google" />
+          </form>
+
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600">
+              Already an affiliate?{" "}
+              <Link to="/signin" className="font-medium text-[#3390d5]">Sign in</Link>
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Right - Image Carousel with Benefits Text */}
+      {/* Right - Image Carousel with Same Dimensions as Form */}
       <div className="hidden md:block md:w-1/2 relative">
-       <div className="h-screen w-full">
-        <Carousel
-            autoPlay
-            infiniteLoop
-            showThumbs={false}
-            showStatus={false}
-           
-            showArrows={false}
-            interval={5000}
-            transitionTime={800}
-            swipeable
-            emulateTouch
-            className="h-full"
-        >
-          {[Img1, Img2, Img3].map((img, idx) => (
-            <div key={idx} className="h-screen relative">
-              <img src={img} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
-            
-            </div>
-          ))}
-        </Carousel>
+        <div className="min-h-screen w-full p-6 sm:p-10 xl:p-16 flex flex-col justify-center">
+          <div className="w-full max-w-md mx-auto">
+            <Carousel
+              autoPlay
+              infiniteLoop
+              showThumbs={false}
+              showStatus={false}
+              showArrows={false}
+              interval={5000}
+              transitionTime={800}
+              swipeable
+              emulateTouch
+              className="h-full"
+            >
+              {[Img1, Img2, Img3].map((img, idx) => (
+                <div key={idx} className="relative">
+                  <img 
+                    src={img} 
+                    alt={`Slide ${idx + 1}`} 
+                    className="w-full h-full object-cover rounded-lg"
+                    style={{ 
+                      width: '100%',
+                      height: 'auto',
+                      maxHeight: '70vh',
+                      aspectRatio: '4/3'
+                    }}
+                  />
+                </div>
+              ))}
+            </Carousel>
+          </div>
         </div>
       </div>
     </div>

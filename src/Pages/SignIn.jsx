@@ -150,7 +150,7 @@ const SignIn = () => {
       )}
 
       {/* Sign In Form */}
-      <div className="w-full md:w-1/2 sm:bg-white flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8">
+      <div className="w-full md:w-1/2 sm:bg-white flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8 min-h-screen">
         <div className="w-full max-w-md space-y-6 sm:space-y-8">
           <div className="text-left sm:text-center">
             <h2 className="text-2xl max-sm:text-start sm:text-3xl font-semibold sm:font-bold text-gray-900 mb-1 sm:mb-2">
@@ -255,33 +255,40 @@ const SignIn = () => {
         </div>
       </div>
 
-      {/* Right Column - Full Screen Carousel */}
+      {/* Right Column - Carousel with Same Dimensions as Signup Form */}
       <div className="hidden md:block md:w-1/2 relative">
-        <div className="h-screen w-full">
-          <Carousel
-            autoPlay
-            infiniteLoop
-            showThumbs={false}
-            showStatus={false}
-            showIndicators={false}
-            showArrows={false}
-            interval={5000}
-            transitionTime={800}
-            swipeable
-            emulateTouch
-            className="h-full"
-          >
-            {[Image1, Image2, Image3, Image4].map((src, idx) => (
-              <div key={idx} className="h-screen relative">
-                <img
-                  src={src}
-                  alt={`Slide ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
-               
-              </div>
-            ))}
-          </Carousel>
+        <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8">
+          <div className="w-full max-w-md h-full">
+            <Carousel
+              autoPlay
+              infiniteLoop
+              showThumbs={false}
+              showStatus={false}
+              showIndicators={false}
+              showArrows={false}
+              interval={5000}
+              transitionTime={800}
+              swipeable
+              emulateTouch
+              className="h-full"
+            >
+              {[Image1, Image2, Image3, Image4].map((src, idx) => (
+                <div key={idx} className="relative">
+                  <img
+                    src={src}
+                    alt={`Slide ${idx + 1}`}
+                    className="w-full h-full object-cover rounded-lg"
+                    style={{ 
+                      width: '100%',
+                      height: 'auto',
+                      maxHeight: '70vh',
+                      aspectRatio: '4/3'
+                    }}
+                  />
+                </div>
+              ))}
+            </Carousel>
+          </div>
         </div>
       </div>
     </div>
