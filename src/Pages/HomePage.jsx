@@ -133,6 +133,8 @@ function HomePage() {
                       shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
               onClick={() => navigate("/affilator-create-account")}
             >
+
+              
               Create Account
             </button>
 

@@ -6,9 +6,9 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import GoogleAuthButton from "../../Components/GoogleAuthButton";
 
-import Img1 from "../../assets/0.jpg";
-import Img2 from "../../assets/1.jpg";
-import Img3 from "../../assets/3.jpg";
+import Img1 from "../../assets/0.png";
+import Img2 from "../../assets/1.png";
+import Img3 from "../../assets/2.png";
 
 import useAuthStore from "../../Store/Auth";
 
