@@ -13,7 +13,11 @@ import {
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import useReferralStore from "../Store/useReferralStore";
-import {QRCodeSVG} from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 
 // Enhanced Modal Component
 const Modal = ({ isOpen, onClose, children, size = "md", title }) => {
@@ -23,7 +27,7 @@ const Modal = ({ isOpen, onClose, children, size = "md", title }) => {
     } else {
       document.body.style.overflow = 'unset';
     }
-    
+
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -41,11 +45,11 @@ const Modal = ({ isOpen, onClose, children, size = "md", title }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Enhanced backdrop with blur effect */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300"
         onClick={onClose}
       />
-      
+
       {/* Modal content with enhanced styling */}
       <div className={`
         relative bg-white rounded-2xl shadow-2xl ${sizeClasses[size]} w-full
@@ -63,7 +67,7 @@ const Modal = ({ isOpen, onClose, children, size = "md", title }) => {
             </button>
           </div>
         )}
-        
+
         <div className={title ? "p-6" : "p-6"}>
           {children}
         </div>
@@ -101,6 +105,34 @@ function Referrals() {
     } finally {
       setIsRefreshing(false);
     }
+  };
+
+  const exportToExcel = () => {
+    const data = filteredReferrals.map((ref) => ({
+      Name: ref.user?.name || "N/A",
+      Email: ref.user?.email || "N/A",
+      "Registration Date": formatDate(ref.user?.joinDate),
+      Status: ref.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Referrals");
+    XLSX.writeFile(workbook, "my-referrals.xlsx");
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    autoTable(doc, {
+      head: [["Name", "Email", "Registration Date", "Status"]],
+      body: filteredReferrals.map((ref) => [
+        ref.user?.name || "N/A",
+        ref.user?.email || "N/A",
+        formatDate(ref.user?.joinDate),
+        ref.status,
+      ]),
+    });
+    doc.save("my-referrals.pdf");
   };
 
   useEffect(() => {
@@ -182,19 +214,19 @@ function Referrals() {
     // For simplicity, we'll use the browser's ability to render QR codes
     // In a real implementation, you might want to use a more robust QR code generation library
     const qrCodeData = getReferralUrl();
-    
+
     // Create a temporary QR code SVG
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'absolute';
     tempDiv.style.left = '-9999px';
     document.body.appendChild(tempDiv);
-    
+
     // This is a simplified approach - in production you'd want to use the QRCodeSVG component's output
     const link = document.createElement('a');
     link.download = `referral-qr-${referralData.affiliateStats.referralCode}.png`;
     link.href = canvas.toDataURL();
     link.click();
-    
+
     document.body.removeChild(tempDiv);
     toast.success("QR code download initiated!");
   };
@@ -253,8 +285,8 @@ function Referrals() {
   return (
     <div className="max-w-7xl mx-auto p-4">
       {/* Enhanced Referral Code Modal */}
-      <Modal 
-        isOpen={isModalOpen} 
+      <Modal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Enter Referral Code"
         size="md"
@@ -290,19 +322,19 @@ function Referrals() {
       </Modal>
 
       {/* Enhanced QR Code Modal */}
-      <Modal 
-        isOpen={isQRModalOpen} 
+      <Modal
+        isOpen={isQRModalOpen}
         onClose={() => setIsQRModalOpen(false)}
         title="Referral QR Code - Full View"
         size="lg"
       >
         <div className="flex flex-col items-center space-y-6">
           {/* Enhanced QR Code with better styling */}
-          <div 
+          <div
             ref={qrRef}
             className="p-6 bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-2xl shadow-inner"
           >
-            <QRCodeSVG 
+            <QRCodeSVG
               value={getReferralUrl()}
               size={280}
               level="H"
@@ -311,7 +343,7 @@ function Referrals() {
               bgColor="#ffffff"
             />
           </div>
-          
+
           <div className="text-center space-y-3 w-full">
             <div className="bg-white rounded-xl p-4">
               <p className="text-sm font-medium text-gray-700 mb-2">Referral Code:</p>
@@ -319,7 +351,7 @@ function Referrals() {
                 {referralData?.affiliateStats?.referralCode}
               </p>
             </div>
-            
+
             <div className="bg-blue-50 rounded-xl p-4">
               <p className="text-xs font-medium text-blue-700 mb-2">Referral URL:</p>
               <p className="text-xs bg-white px-3 py-2 rounded-lg break-all border border-blue-200 font-mono">
@@ -327,7 +359,7 @@ function Referrals() {
               </p>
             </div>
           </div>
-          
+
           <div className="flex space-x-3 w-full">
             <button
               onClick={() => copyToClipboard(getReferralUrl(), "Referral URL copied to clipboard!")}
@@ -348,11 +380,11 @@ function Referrals() {
       </Modal>
 
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start mb-6 gap-6">
+      <div className="flex flex-col lg:flex-col justify-between items-start mb-6 gap-6">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
           My Referrals
         </h1>
-        
+
         {/* Add Referral Button */}
         <button
           onClick={() => setIsModalOpen(true)}
@@ -367,128 +399,146 @@ function Referrals() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Left Column - Stats and QR Code */}
         <div className="lg:col-span-1 space-y-6">
-       
-                {referralData?.affiliateStats && (
-                <>
-                  <div className="grid grid-cols-1 gap-4">
-                  <div className="bg-white p-4 rounded-lg shadow border">
-                    <h3 className="text-sm text-gray-500 mb-1">Total Referrals</h3>
-                    <p className="text-2xl font-bold text-[#3390d5]">
+
+          {referralData?.affiliateStats && (
+            <>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="bg-white p-4 rounded-lg shadow border">
+                  <h3 className="text-sm text-gray-500 mb-1">Total Referrals</h3>
+                  <p className="text-2xl font-bold text-[#3390d5]">
                     {referralData.affiliateStats.totalReferrals}
-                    </p>
-                  </div>
-                  <div className="bg-white p-4 rounded-lg shadow border">
-                    <h3 className="text-sm text-gray-500 mb-1">Active Referrals</h3>
-                    <p className="text-2xl font-bold text-[#3390d5]">
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow border">
+                  <h3 className="text-sm text-gray-500 mb-1">Active Referrals</h3>
+                  <p className="text-2xl font-bold text-[#3390d5]">
                     {referralData.affiliateStats.activeReferrals}
-                    </p>
-                  </div>
-                  <div className="bg-white p-4 rounded-lg shadow border">
-                    <h3 className="text-sm text-gray-500 mb-1">Total Earnings</h3>
-                    <p className="text-2xl font-bold flex items-center text-[#3390d5]">
-                   €
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow border">
+                  <h3 className="text-sm text-gray-500 mb-1">Total Earnings</h3>
+                  <p className="text-2xl font-bold flex items-center text-[#3390d5]">
+                    €
                     {referralData.affiliateStats.totalBonusEarned || 0}
-                    </p>
-                  </div>
-                  </div>
+                  </p>
+                </div>
+              </div>
 
 
-                      <div className="bg-white rounded-lg shadow border overflow-hidden">
-                      <div className="bg-[#3390d5] px-4 py-3">
-                      <div className="flex items-center justify-between">
-                      <h3 className="text-white font-semibold">Your Referral QR Code</h3>
+              <div className="bg-white rounded-lg shadow border overflow-hidden">
+                <div className="bg-[#3390d5] px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-white font-semibold">Your Referral QR Code</h3>
+                    <button
+                      onClick={loadData}
+                      disabled={isRefreshing}
+                      className="text-white hover:text-blue-200 transition-colors"
+                      title="Refresh"
+                    >
+                      <FiRefreshCw className={`${isRefreshing ? "animate-spin" : ""}`} size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  {/* QR Code Display */}
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-white border-2 border-gray-200 rounded-lg shadow-sm">
+                      {referralData.affiliateStats.referralCode ? (
+                        <QRCodeSVG
+                          value={getReferralUrl()}
+                          size={140}
+                          level="H"
+                          includeMargin={true}
+                          fgColor="#1f2937"
+                          bgColor="#ffffff"
+                        />
+                      ) : (
+                        <div className="w-[140px] h-[140px] bg-gray-100 rounded flex items-center justify-center">
+                          <span className="text-gray-400 text-sm">Loading...</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Referral Code Display */}
+                  <div className="text-center mb-4">
+                    <p className="text-xs text-gray-500 mb-2">Referral Code:</p>
+                    <div className="bg-white rounded-lg p-2 border">
+                      <span className="font-mono text-sm font-semibold">
+                        {referralData.affiliateStats.referralCode || "Loading..."}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <button
-                        onClick={loadData}
-                        disabled={isRefreshing}
-                        className="text-white hover:text-blue-200 transition-colors"
-                        title="Refresh"
+                        onClick={() => copyToClipboard(
+                          referralData.affiliateStats.referralCode,
+                          "Referral code copied to clipboard!"
+                        )}
+                        disabled={!referralData.affiliateStats.referralCode}
+                        className="flex items-center justify-center px-3 py-2 bg-[#E6F1F9] text-[#3390d5] rounded-lg hover:bg-[#3390d5] hover:text-white transition-colors text-xs font-medium disabled:opacity-50"
                       >
-                        <FiRefreshCw className={`${isRefreshing ? "animate-spin" : ""}`} size={16} />
+                        <FiCopy className="mr-1" size={12} />
+                        Copy Code
                       </button>
-                      </div>
-                      </div>
-                      
-                      <div className="p-4">
-                      {/* QR Code Display */}
-                        <div className="flex justify-center mb-4">
-                        <div className="p-3 bg-white border-2 border-gray-200 rounded-lg shadow-sm">
-                          {referralData.affiliateStats.referralCode ? (
-                          <QRCodeSVG 
-                            value={getReferralUrl()}
-                            size={140}
-                            level="H"
-                            includeMargin={true}
-                            fgColor="#1f2937"
-                            bgColor="#ffffff"
-                          />
-                          ) : (
-                          <div className="w-[140px] h-[140px] bg-gray-100 rounded flex items-center justify-center">
-                            <span className="text-gray-400 text-sm">Loading...</span>
-                          </div>
-                          )}
-                        </div>
-                        </div>
-
-                        {/* Referral Code Display */}
-                        <div className="text-center mb-4">
-                        <p className="text-xs text-gray-500 mb-2">Referral Code:</p>
-                        <div className="bg-white rounded-lg p-2 border">
-                          <span className="font-mono text-sm font-semibold">
-                          {referralData.affiliateStats.referralCode || "Loading..."}
-                          </span>
-                        </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="space-y-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                          onClick={() => copyToClipboard(
-                            referralData.affiliateStats.referralCode,
-                            "Referral code copied to clipboard!"
-                          )}
-                          disabled={!referralData.affiliateStats.referralCode}
-                          className="flex items-center justify-center px-3 py-2 bg-[#E6F1F9] text-[#3390d5] rounded-lg hover:bg-[#3390d5] hover:text-white transition-colors text-xs font-medium disabled:opacity-50"
-                          >
-                          <FiCopy className="mr-1" size={12} />
-                          Copy Code
-                          </button>
-                          <button
-                          onClick={() => copyToClipboard(getReferralUrl(), "Referral URL copied to clipboard!")}
-                          disabled={!referralData.affiliateStats.referralCode}
-                          className="flex items-center justify-center px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs font-medium disabled:opacity-50"
-                          >
-                          <FiCopy className="mr-1" size={12} />
-                          Copy URL
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                          onClick={() => setIsQRModalOpen(true)}
-                          disabled={!referralData.affiliateStats.referralCode}
-                          className="flex items-center justify-center px-3 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-xs font-medium disabled:opacity-50"
-                          >
-                          <FiMaximize2 className="mr-1" size={12} />
-                          Full View
-                          </button>
-                          <button
-                          onClick={() => downloadQRCode(300)}
-                          disabled={!referralData.affiliateStats.referralCode}
-                          className="flex items-center justify-center px-3 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors text-xs font-medium disabled:opacity-50"
-                          >
-                          <FiDownload className="mr-1" size={12} />
-                          Download
-                          </button>
-                        </div>
-                        </div>
-                      </div>
-                      </div>
-                    </>
-                    )}
+                      <button
+                        onClick={() => copyToClipboard(getReferralUrl(), "Referral URL copied to clipboard!")}
+                        disabled={!referralData.affiliateStats.referralCode}
+                        className="flex items-center justify-center px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs font-medium disabled:opacity-50"
+                      >
+                        <FiCopy className="mr-1" size={12} />
+                        Copy URL
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setIsQRModalOpen(true)}
+                        disabled={!referralData.affiliateStats.referralCode}
+                        className="flex items-center justify-center px-3 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-xs font-medium disabled:opacity-50"
+                      >
+                        <FiMaximize2 className="mr-1" size={12} />
+                        Full View
+                      </button>
+                      <button
+                        onClick={() => downloadQRCode(300)}
+                        disabled={!referralData.affiliateStats.referralCode}
+                        className="flex items-center justify-center px-3 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors text-xs font-medium disabled:opacity-50"
+                      >
+                        <FiDownload className="mr-1" size={12} />
+                        Download
+                      </button>
+                    </div>
                   </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
-                  {/* Right Column - Referrals Table */}
+        {/* Right Column - Referrals Table */}
         <div className="lg:col-span-2">
+          {/* Export Buttons */}
+          <div className="flex flex-wrap gap-3 mb-4">
+            <button
+              onClick={exportToExcel}
+              className="flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md"
+            >
+              <FiDownload className="mr-2" size={14} />
+              Export as XLS
+            </button>
+            <button
+              onClick={exportToPDF}
+              className="flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md"
+            >
+              <FiDownload className="mr-2" size={14} />
+              Export as PDF
+            </button>
+          </div>
+
           {/* Search Bar */}
           <div className="relative mb-4">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -549,13 +599,12 @@ function Referrals() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              referral.status === "active"
-                                ? "bg-green-100 text-green-800"
-                                : referral.status === "pending"
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${referral.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : referral.status === "pending"
                                 ? "bg-yellow-100 text-yellow-800"
                                 : "bg-gray-100 text-gray-800"
-                            }`}
+                              }`}
                           >
                             {referral.status}
                           </span>

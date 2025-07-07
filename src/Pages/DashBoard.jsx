@@ -89,12 +89,13 @@ function DashBoard({ welcomeOnly = undefined }) {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency,
-    }).format(amount || 0);
-  };
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount || 0);
+};
+
 
   if (loading) {
     return (

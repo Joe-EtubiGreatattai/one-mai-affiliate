@@ -31,7 +31,7 @@ const RecentTransactions = () => {
 
   const formatAmount = (type, amount) => {
     const formattedAmount = parseFloat(amount).toFixed(2);
-    return `${type === "withdrawal" ? "-" : "+"}$${formattedAmount}`;
+    return `${type === "withdrawal" ? "-" : "+"}€${formattedAmount}`;
   };
 
   const formatDate = (dateString) => {

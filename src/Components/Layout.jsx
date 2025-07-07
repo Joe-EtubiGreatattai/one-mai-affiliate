@@ -11,6 +11,9 @@ import {
   FiX,
   FiSearch,
   FiLogOut,
+  FiSun,
+  FiMoon,
+  FiMessageSquare,
 } from "react-icons/fi";
 import { IoMdPerson } from "react-icons/io";
 import { FaUserCircle } from "react-icons/fa";
@@ -23,6 +26,12 @@ const Layout = () => {
   const isAffiliate = userRole === "affiliate";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("darkMode") === "true"
+  );
+  const [language, setLanguage] = useState(
+    localStorage.getItem("language") || "en"
+  );
   const profileButtonRef = useRef(null);
   const tabletSidebarRef = useRef(null);
   const desktopSidebarRef = useRef(null);
@@ -31,6 +40,20 @@ const Layout = () => {
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
   const toggleDropdown = () => setShowDropdown(!showDropdown);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("darkMode", "true");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("darkMode", "false");
+    }
+  }, [darkMode]);
+
+  useEffect(() => {
+    localStorage.setItem("language", language);
+  }, [language]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -81,32 +104,39 @@ const Layout = () => {
     setShowDropdown(false);
   };
 
-const NavItem = ({ to, icon, text, onClick }) => (
-  <NavLink
-    to={to}
-    onClick={onClick}
-    className={({ isActive }) =>
-      `flex items-center p-3 rounded-lg transition-colors relative ${
-        isActive
-          ? "bg-white text-[#3390d5] font-medium dark:bg-gray-700 dark:text-white"
-          : "text-gray-600 hover:bg-white dark:text-gray-300 dark:hover:bg-gray-800"
-      }`
-    }
-    end
-  >
-    {({ isActive }) => (
-      <>
-        <span className="flex-shrink-0">{icon}</span>
-        <span className="ml-3 text-sm">{text}</span>
-        {isActive && (
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#3390d5] rounded-r-md"></div>
-        )}
-      </>
-    )}
-  </NavLink>
-);
+  const handleLanguageChange = (e) => {
+    setLanguage(e.target.value);
+  };
 
-  // Mobile Bottom Tab Item Component
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const NavItem = ({ to, icon, text, onClick }) => (
+    <NavLink
+      to={to}
+      onClick={onClick}
+      className={({ isActive }) =>
+        `flex items-center p-3 rounded-lg transition-colors relative ${
+          isActive
+            ? "bg-white text-[#3390d5] font-medium dark:bg-gray-700 dark:text-white"
+            : "text-gray-600 hover:bg-white dark:text-gray-300 dark:hover:bg-gray-800"
+        }`
+      }
+      end
+    >
+      {({ isActive }) => (
+        <>
+          <span className="flex-shrink-0">{icon}</span>
+          <span className="ml-3 text-sm">{text}</span>
+          {isActive && (
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#3390d5] rounded-r-md"></div>
+          )}
+        </>
+      )}
+    </NavLink>
+  );
+
   const BottomTabItem = ({ to, icon, text }) => (
     <NavLink
       to={to}
@@ -152,7 +182,7 @@ const NavItem = ({ to, icon, text, onClick }) => (
             <NavItem
               to="/notification"
               icon={<FiBell size={20} />}
-              text="Notifications"
+              text="Promotional resources"
             />
             <NavItem
               to="/profile"
@@ -197,7 +227,7 @@ const NavItem = ({ to, icon, text, onClick }) => (
             <NavItem
               to="/notification"
               icon={<FiBell size={20} />}
-              text="Notifications"
+              text="Promotional resources"
               onClick={toggleMobileMenu}
             />
             <NavItem
@@ -232,7 +262,35 @@ const NavItem = ({ to, icon, text, onClick }) => (
             </div>
 
             <div className="flex items-center space-x-4">
-      
+              {/* Language Selector */}
+              <select
+                value={language}
+                onChange={handleLanguageChange}
+                className="hidden md:block bg-white/10 dark:bg-gray-700/50 backdrop-blur-sm border border-gray-200 dark:border-gray-600 text-gray-800 dark:text-white p-1.5 rounded-md text-sm shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 cursor-pointer"
+              >
+                <option value="en">English</option>
+                <option value="pt">Portuguese</option>
+                <option value="fr">French</option>
+                <option value="es">Spanish</option>
+              </select>
+
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                aria-label="Toggle dark mode"
+              >
+                {darkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
+              </button>
+
+              {/* Support Link - Same style as notifications */}
+              <Link to="/support" className="hidden md:block">
+                <button className="p-2 cursor-pointer rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 relative">
+                  <FiMessageSquare className="h-5 w-5" />
+                </button>
+              </Link>
+
+              {/* Notifications Link */}
               <Link to="/notification" className="hidden md:block">
                 <button className="p-2 cursor-pointer rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 relative">
                   <FiBell className="h-5 w-5" />
@@ -315,7 +373,7 @@ const NavItem = ({ to, icon, text, onClick }) => (
             <BottomTabItem
               to="/notification"
               icon={<FiBell size={20} />}
-              text="Notifications"
+              text="Promotional resources"
             />
             <BottomTabItem
               to="/profile"

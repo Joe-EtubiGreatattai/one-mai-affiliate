@@ -10,6 +10,7 @@ import { Toaster } from "react-hot-toast";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import usePWAInstall from "./Components/usePWAInstall";
 import useAuthStore from "./Store/Auth";
+
 // Pages
 import SignIn from "./Pages/SignIn";
 import OtpVerification from "./Pages/OtpVerification";
@@ -20,8 +21,8 @@ import CreateNewPassword from "./Pages/CreateNewPassword";
 import HomePage from "./Pages/HomePage";
 import Referrals from "./Pages/Referals";
 import NotificationPage from "./Pages/NotificationPage";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Components
 import Layout from "./Components/Layout";
@@ -31,6 +32,7 @@ import ProfilePage from "./Components/profile/ProfilePage";
 import TermAndCondition from "./Pages/TermAndCondition";
 import Privacy from "./Pages/Privacy";
 import Support from "./Pages/Support";
+
 // Auth Protected Route Component
 const ProtectedRoute = () => {
   const { user } = useAuthStore();
@@ -44,20 +46,18 @@ const PublicRoute = () => {
 };
 
 function App() {
-  // PWA Installation Prompt
   const [isInstallable, triggerInstall] = usePWAInstall();
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
     let darkMode = localStorage.getItem("darkMode");
-    if (darkMode == "true") {
+    if (darkMode === "true") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
   }, []);
 
-  // Service Worker Update Handling
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -77,7 +77,6 @@ function App() {
     return () => clearTimeout(timer);
   }, [isInstallable]);
 
-  // Close offline ready/update notifications
   const closePrompt = () => {
     setOfflineReady(false);
     setNeedRefresh(false);
@@ -88,38 +87,13 @@ function App() {
       <Toaster />
       <ToastContainer position="bottom-right" autoClose={5000} />
 
-      {/* PWA Install Banner - Updated to top with less height */}
-      {/* {showBanner && (
-        <div className="fixed top-0 left-0 right-0 bg-[#3390d5] text-white p-2 z-50 shadow-md">
-          <div className="container mx-auto flex justify-between items-center">
-            <div className="text-sm">
-              <h3 className="font-bold text-base">Install Our App</h3>
-              <p className="text-xs">
-                Get the best experience by installing to your home screen
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShowBanner(false)}
-                className="px-3 py-1 bg-white text-[#3390d5] rounded text-sm"
-              >
-                Later
-              </button>
-              <button
-                onClick={triggerInstall}
-                className="px-3 py-1 bg-white text-[#3390d5] rounded font-bold text-sm"
-              >
-                Install
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
-
-      {/* Service Worker Update Notification - Also updated to top */}
-    
-
       <Routes>
+        {/* Global public routes (accessible to everyone) */}
+        <Route path="/support" element={<Support />} />
+        <Route path="/terms" element={<TermAndCondition />} />
+        <Route path="/privacy" element={<Privacy />} />
+
+        {/* Public route guard */}
         <Route element={<PublicRoute />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/signIn" element={<SignIn />} />
@@ -132,12 +106,9 @@ function App() {
             path="/affilator-create-account"
             element={<AffiliateRegistration />}
           />
-           <Route path="/terms" element={<TermAndCondition />} />
-          <Route path="/privacy" element={<Privacy />} />
-            <Route path="/support" element={<Support />} />
-         
         </Route>
 
+        {/* Protected route guard */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<DashboardLayout />} />
