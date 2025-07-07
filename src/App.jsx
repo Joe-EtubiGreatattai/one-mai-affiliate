@@ -32,6 +32,7 @@ import ProfilePage from "./Components/profile/ProfilePage";
 import TermAndCondition from "./Pages/TermAndCondition";
 import Privacy from "./Pages/Privacy";
 import Support from "./Pages/Support";
+import Promotional from "./Pages/PromotionalResources";
 
 // Auth Protected Route Component
 const ProtectedRoute = () => {
@@ -114,6 +115,7 @@ function App() {
             <Route path="/dashboard" element={<DashboardLayout />} />
             <Route path="/refearals" element={<Referrals />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/promotional" element={<Promotional />} />
             <Route path="/notification" element={<NotificationPage />} />
           </Route>
         </Route>

@@ -5,8 +5,9 @@ import {
   FiHome,
   FiUsers,
   FiUser,
-  FiBell,
+  FiTag,
   FiSettings,
+  FiBell,
   FiMenu,
   FiX,
   FiSearch,
@@ -180,9 +181,9 @@ const Layout = () => {
               text="Referrals"
             />
             <NavItem
-              to="/notification"
-              icon={<FiBell size={20} />}
-              text="Promotional resources"
+              to="/promotional"
+              icon={<FiTag size={20} />}
+              text="Promotional Resources"
             />
             <NavItem
               to="/profile"
@@ -225,9 +226,9 @@ const Layout = () => {
               onClick={toggleMobileMenu}
             />
             <NavItem
-              to="/notification"
-              icon={<FiBell size={20} />}
-              text="Promotional resources"
+              to="/promotional"
+              icon={<FiTag size={20} />}
+              text="Promotional Resources"
               onClick={toggleMobileMenu}
             />
             <NavItem
@@ -284,14 +285,14 @@ const Layout = () => {
               </button>
 
               {/* Support Link - Same style as notifications */}
-              <Link to="/support" className="hidden md:block">
+              <Link to="/support" className="">
                 <button className="p-2 cursor-pointer rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 relative">
                   <FiMessageSquare className="h-5 w-5" />
                 </button>
               </Link>
 
               {/* Notifications Link */}
-              <Link to="/notification" className="hidden md:block">
+              <Link to="/notification" className="">
                 <button className="p-2 cursor-pointer rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 relative">
                   <FiBell className="h-5 w-5" />
                   <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
@@ -371,9 +372,9 @@ const Layout = () => {
               text="Referrals"
             />
             <BottomTabItem
-              to="/notification"
-              icon={<FiBell size={20} />}
-              text="Promotional resources"
+              to="/promotional"
+              icon={<FiTag size={20} />}
+              text="Promotionals"
             />
             <BottomTabItem
               to="/profile"
