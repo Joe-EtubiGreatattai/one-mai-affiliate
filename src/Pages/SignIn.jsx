@@ -277,7 +277,7 @@ const SignIn = () => {
                   <img
                     src={src}
                     alt={`Slide ${idx + 1}`}
-                    className="w-full h-full object-cover rounded-lg"
+                    className="w-full h-full object-fit rounded-lg"
                     style={{ 
                       width: '100%',
                       height: 'auto',
