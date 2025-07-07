@@ -1,3 +1,4 @@
+// PromotionalResources.jsx
 import React from "react";
 import { FiDownload, FiCopy, FiShare2, FiLink } from "react-icons/fi";
 
@@ -79,7 +80,8 @@ const PromotionalResources = () => {
                 <a
                   href={featured.downloadLink}
                   download
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+                  className="px-4 py-2 rounded-md text-sm text-white"
+                  style={{ backgroundColor: "#3390d5" }}
                 >
                   <FiDownload className="inline mr-2" /> Download
                 </a>
@@ -116,8 +118,12 @@ const PromotionalResources = () => {
                       <a
                         href={kit.downloadLink}
                         download
-                        className="p-2 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
+                        className="p-2 rounded-full"
                         title="Download"
+                        style={{
+                          backgroundColor: "#e6f3fc",
+                          color: "#3390d5"
+                        }}
                       >
                         <FiDownload className="h-5 w-5" />
                       </a>
@@ -140,7 +146,8 @@ const PromotionalResources = () => {
                       href={kit.shareLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center"
+                      className="text-sm hover:underline flex items-center"
+                      style={{ color: "#3390d5" }}
                     >
                       <FiLink className="mr-1" /> Preview
                     </a>
@@ -161,7 +168,12 @@ const PromotionalResources = () => {
                   {kit.title}
                 </div>
                 <div className="flex items-center space-x-3">
-                  <a href={kit.downloadLink} download className="text-blue-600 dark:text-blue-300 hover:underline text-sm">
+                  <a
+                    href={kit.downloadLink}
+                    download
+                    className="text-sm hover:underline"
+                    style={{ color: "#3390d5" }}
+                  >
                     Download
                   </a>
                   <button
