@@ -10,7 +10,8 @@ import {
   FiCalendar,
   FiUser,
   FiHash,
-  FiGlobe
+  FiGlobe,
+  FiCopy
 } from "react-icons/fi";
 import useBankStore from "../../Store/useBankStore";
 
@@ -89,6 +90,7 @@ const BankDetailsForm = ({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [copiedId, setCopiedId] = useState(null);
 
   // Handle errors from store
   useEffect(() => {
@@ -187,31 +189,10 @@ const BankDetailsForm = ({
     return iban.replace(/(.{4})/g, '$1 ').trim();
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getStatusBadge = (account) => {
-    if (account.isVerified) {
-      return (
-        <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
-          <FiCheck className="w-3 h-3 mr-1" />
-          <span className="hidden sm:inline">Verified</span>
-          <span className="sm:hidden">✓</span>
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-        <FiX className="w-3 h-3 mr-1" />
-        <span className="hidden sm:inline">Pending</span>
-        <span className="sm:hidden">⏳</span>
-      </span>
-    );
+  const handleCopy = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 1500);
   };
 
   const handleModalClose = () => {
@@ -400,111 +381,67 @@ const BankDetailsForm = ({
 
       {/* Bank Accounts Grid */}
       {accounts && accounts.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          {accounts.map((account, index) => (
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
+          {accounts.map((account) => (
             <div
-              key={account._id || index}
-              className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 group"
+              key={account._id}
+              className="w-full max-w-md mx-auto rounded-xl p-6 shadow-lg bg-gradient-to-br from-[#0f1e41] to-[#1b3265] text-white font-mono relative overflow-hidden"
             >
-              {/* Card Header */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 sm:p-6 border-b border-gray-100">
-                <div className="flex justify-between items-start mb-3 sm:mb-4">
-                  <div className="flex items-center">
-                    <div className="bg-blue-100 p-2 sm:p-3 rounded-lg sm:rounded-xl mr-2 sm:mr-4">
-                      <FiCreditCard className="text-[#3390d5]" size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-                        {account.bankName}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-gray-600">
-                        {account.accountHolderName}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col items-end gap-1 sm:gap-2">
-                    {getStatusBadge(account)}
-                    {account.isDefault && (
-                      <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-                        Default
-                      </span>
-                    )}
-                  </div>
+              {/* Top */}
+              <div className="flex items-center mb-8">
+                {/* Chip */}
+                <div className="w-10 h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded-sm mr-2"></div>
+                {/* Contactless icon */}
+                <div className="flex space-x-0.5">
+                  <div className="w-1 h-2 rounded-sm bg-white opacity-50"></div>
+                  <div className="w-1 h-3 rounded-sm bg-white opacity-50"></div>
+                  <div className="w-1 h-4 rounded-sm bg-white opacity-50"></div>
                 </div>
               </div>
 
-              {/* Card Content */}
-              <div className="p-3 sm:p-6">
-                <div className="space-y-3 sm:space-y-4">
-                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4">
-                    <div className="flex items-center mb-2">
-                      <FiHash className="text-gray-400 mr-2" size={14} />
-                      <span className="text-xs sm:text-sm font-bold text-gray-700">IBAN</span>
-                    </div>
-                    <p className="font-mono text-sm sm:text-lg font-semibold text-gray-900 break-all">
-                      {formatIban(account.iban)}
-                    </p>
-                  </div>
+              {/* IBAN - copyable */}
+              <div className="text-2xl tracking-widest font-semibold mb-3 flex items-center gap-2">
+                <span>{formatIban(account.iban)}</span>
+                <button 
+                  onClick={() => handleCopy(account.iban, account._id)} 
+                  className="text-white hover:text-blue-300 transition-colors"
+                >
+                  {copiedId === account._id ? <FiCheck size={18} /> : <FiCopy size={18} />}
+                </button>
+              </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    {account.bic && (
-                      <div>
-                        <div className="flex items-center mb-2">
-                          <FiGlobe className="text-gray-400 mr-2" size={12} />
-                          <span className="text-xs sm:text-sm font-bold text-gray-700">SWIFT/BIC</span>
-                        </div>
-                        <p className="font-mono text-xs sm:text-sm font-semibold text-gray-900">
-                          {account.bic}
-                        </p>
-                      </div>
-                    )}
-                    
-                    <div>
-                      <div className="flex items-center mb-2">
-                        <FiMapPin className="text-gray-400 mr-2" size={12} />
-                        <span className="text-xs sm:text-sm font-bold text-gray-700">Currency</span>
-                      </div>
-                      <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                        {account.currency?.toUpperCase() || 'N/A'}
-                      </p>
-                    </div>
-                    
-                    {account.country && (
-                      <div>
-                        <div className="flex items-center mb-2">
-                          <FiMapPin className="text-gray-400 mr-2" size={12} />
-                          <span className="text-xs sm:text-sm font-bold text-gray-700">Country</span>
-                        </div>
-                        <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                          {account.country}
-                        </p>
-                      </div>
-                    )}
-                    
-                    <div>
-                      <div className="flex items-center mb-2">
-                        <FiCalendar className="text-gray-400 mr-2" size={12} />
-                        <span className="text-xs sm:text-sm font-bold text-gray-700">Added</span>
-                      </div>
-                      <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                        {formatDate(account.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              {/* Account Holder */}
+              <div className="uppercase text-xs text-slate-300">Cardholder</div>
+              <div className="text-sm mb-3">{account.accountHolderName}</div>
 
-                {/* Action Buttons - Uncomment when needed */}
-                {/* 
-                <div className="flex justify-end space-x-3 pt-6 mt-6 border-t border-gray-100">
-                  <button className="p-3 text-gray-500 hover:text-[#3390d5] hover:bg-blue-50 rounded-xl transition-all duration-200">
-                    <FiEdit2 size={18} />
-                  </button>
-                  <button className="p-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200">
-                    <FiTrash2 size={18} />
-                  </button>
+              {/* Bank Name */}
+              <div className="uppercase text-xs text-slate-300">Bank</div>
+              <div className="text-sm mb-6">{account.bankName}</div>
+
+              {/* SWIFT & Country */}
+              <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
+                <div>
+                  <div className="uppercase text-xs">SWIFT</div>
+                  <div className="text-sm">{account.bic || "N/A"}</div>
                 </div>
-                */}
+                <div>
+                  <div className="uppercase text-xs">Country</div>
+                  <div className="text-sm">{account.country || "N/A"}</div>
+                </div>
+              </div>
+
+              {/* Currency and status */}
+              <div className="flex justify-between items-center mt-6 text-xs">
+                <span className="uppercase">{account.currency || "N/A"}</span>
+                <span
+                  className={`text-[11px] px-2 py-0.5 rounded-full ${
+                    account.isVerified
+                      ? "bg-green-600 text-white"
+                      : "bg-yellow-500 text-white"
+                  }`}
+                >
+                  {account.isVerified ? "Verified" : "Pending"}
+                </span>
               </div>
             </div>
           ))}
