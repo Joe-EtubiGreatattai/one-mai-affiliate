@@ -39,22 +39,22 @@ const Modal = ({ isOpen, onClose, children, size = "md", title }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4">
       <div 
         className="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300"
         onClick={onClose}
       />
       
       <div className={`
-        relative bg-white rounded-xl sm:rounded-2xl shadow-2xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden
+        relative bg-white rounded-none sm:rounded-2xl sm:shadow-2xl ${sizeClasses[size]} w-full max-h-[100vh] sm:max-h-[90vh] overflow-hidden
         transform transition-all duration-300 scale-100
-        border border-gray-200/50
+        sm:border sm:border-gray-200/50
       `}>
         {title && (
-          <div className="flex items-center justify-between p-3 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center">
               <FiCreditCard className="mr-2 sm:mr-3 text-[#3390d5]" size={20} />
-              <span className="text-sm sm:text-xl">{title}</span>
+              <span className="text-lg sm:text-xl">{title}</span>
             </h2>
             <button
               onClick={onClose}
@@ -66,7 +66,7 @@ const Modal = ({ isOpen, onClose, children, size = "md", title }) => {
           </div>
         )}
         
-        <div className={`${title ? "p-3 sm:p-6" : "p-3 sm:p-6"} max-h-[calc(90vh-80px)] overflow-y-auto`}>
+        <div className={`${title ? "p-4 sm:p-6" : "p-4 sm:p-6"} max-h-[calc(100vh-80px)] sm:max-h-[calc(90vh-80px)] overflow-y-auto`}>
           {children}
         </div>
       </div>
@@ -207,7 +207,7 @@ const BankDetailsForm = ({
   };
 
   return (
-    <div className="w-full sm:max-w-6xl sm:mx-auto p-2 sm:p-4 space-y-4 sm:space-y-6">
+    <div className="w-full sm:max-w-6xl sm:mx-auto p-0 sm:p-4 space-y-4 sm:space-y-6">
       {/* Add Bank Account Modal */}
       <Modal 
         isOpen={showAddModal} 
@@ -218,7 +218,7 @@ const BankDetailsForm = ({
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div className="md:col-span-2">
-              <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+              <label className="block text-sm font-bold text-gray-800 mb-2 sm:mb-3">
                 Bank Name *
               </label>
               <div className="relative">
@@ -228,7 +228,7 @@ const BankDetailsForm = ({
                   name="bankName"
                   value={bankDetails.bankName}
                   onChange={handleInputChange}
-                  className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white focus:bg-white text-sm sm:text-base ${
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white focus:bg-white ${
                     validationErrors.bankName ? 'border-red-300' : 'border-gray-200'
                   }`}
                   required
@@ -236,12 +236,12 @@ const BankDetailsForm = ({
                 />
               </div>
               {validationErrors.bankName && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">{validationErrors.bankName}</p>
+                <p className="text-red-500 text-sm mt-1">{validationErrors.bankName}</p>
               )}
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+              <label className="block text-sm font-bold text-gray-800 mb-2 sm:mb-3">
                 IBAN Number *
               </label>
               <div className="relative">
@@ -262,7 +262,7 @@ const BankDetailsForm = ({
                     e.target.value = formattedValue;
                     handleInputChange(e);
                   }}
-                  className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white focus:bg-white font-mono text-sm ${
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white focus:bg-white font-mono text-sm ${
                     validationErrors.ibanNumber ? 'border-red-300' : 'border-gray-200'
                   }`}
                   required
@@ -271,12 +271,12 @@ const BankDetailsForm = ({
                 />
               </div>
               {validationErrors.ibanNumber && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">{validationErrors.ibanNumber}</p>
+                <p className="text-red-500 text-sm mt-1">{validationErrors.ibanNumber}</p>
               )}
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+              <label className="block text-sm font-bold text-gray-800 mb-2 sm:mb-3">
                 Account Holder Name *
               </label>
               <div className="relative">
@@ -286,7 +286,7 @@ const BankDetailsForm = ({
                   name="beneficiaryName"
                   value={bankDetails.beneficiaryName}
                   onChange={handleInputChange}
-                  className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white focus:bg-white text-sm sm:text-base ${
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white focus:bg-white ${
                     validationErrors.beneficiaryName ? 'border-red-300' : 'border-gray-200'
                   }`}
                   required
@@ -294,12 +294,12 @@ const BankDetailsForm = ({
                 />
               </div>
               {validationErrors.beneficiaryName && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">{validationErrors.beneficiaryName}</p>
+                <p className="text-red-500 text-sm mt-1">{validationErrors.beneficiaryName}</p>
               )}
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+              <label className="block text-sm font-bold text-gray-800 mb-2 sm:mb-3">
                 SWIFT/BIC Code
               </label>
               <div className="relative">
@@ -314,7 +314,7 @@ const BankDetailsForm = ({
                       .replace(/[^A-Z0-9]/g, "");
                     handleInputChange(e);
                   }}
-                  className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white focus:bg-white font-mono text-sm ${
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white focus:bg-white font-mono text-sm ${
                     validationErrors.swiftCode ? 'border-red-300' : 'border-gray-200'
                   }`}
                   placeholder="BARCGB22"
@@ -322,27 +322,27 @@ const BankDetailsForm = ({
                 />
               </div>
               {validationErrors.swiftCode && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">{validationErrors.swiftCode}</p>
+                <p className="text-red-500 text-sm mt-1">{validationErrors.swiftCode}</p>
               )}
-              <p className="text-xs text-gray-500 mt-1 sm:mt-2">Optional - Used for international transfers</p>
+              <p className="text-xs text-gray-500 mt-2">Optional - Used for international transfers</p>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2 sm:py-3 px-4 sm:px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl text-sm sm:text-base"
+              className="flex-1 py-3 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-3 sm:h-4 w-3 sm:w-4 border-2 border-white border-t-transparent mr-2"></div>
-                  <span className="text-sm sm:text-base">Processing...</span>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                  <span>Processing...</span>
                 </>
               ) : (
                 <>
-                  <FiPlus className="mr-2 h-3 sm:h-4 w-3 sm:w-4" />
-                  <span className="text-sm sm:text-base">Add Bank Account</span>
+                  <FiPlus className="mr-2 h-4 w-4" />
+                  <span>Add Bank Account</span>
                 </>
               )}
             </button>
@@ -350,7 +350,7 @@ const BankDetailsForm = ({
             <button
               type="button"
               onClick={handleModalClose}
-              className="px-4 sm:px-6 py-2 sm:py-3 border-2 border-gray-300 text-gray-700 rounded-lg sm:rounded-xl hover:bg-white font-semibold transition-all duration-200 text-sm sm:text-base"
+              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg sm:rounded-xl hover:bg-white font-semibold transition-all duration-200"
             >
               Cancel
             </button>
@@ -359,9 +359,9 @@ const BankDetailsForm = ({
       </Modal>
 
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 p-4 sm:p-0">
         <div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
+          <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">
             Bank Accounts
           </h1>
           <p className="text-sm sm:text-base text-gray-600">
@@ -371,26 +371,26 @@ const BankDetailsForm = ({
         
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-[#3390d5] text-white rounded-lg sm:rounded-xl hover:bg-[#2e7ab3] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl text-sm sm:text-base w-full sm:w-auto"
+          className="flex items-center justify-center px-6 py-3 bg-[#3390d5] text-white rounded-lg sm:rounded-xl hover:bg-[#2e7ab3] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl w-full sm:w-auto"
           style={{ background: "#3390d5" }}
         >
           <FiPlus className="mr-2" size={16} />
-          <span className="text-sm sm:text-base">Add Account</span>
+          <span>Add Account</span>
         </button>
       </div>
 
       {/* Bank Accounts Grid */}
       {accounts && accounts.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 gap-3 sm:gap-6 px-4 sm:px-0">
           {accounts.map((account) => (
             <div
               key={account._id}
-              className="w-full max-w-md mx-auto rounded-xl p-6 shadow-lg bg-gradient-to-br from-[#0f1e41] to-[#1b3265] text-white font-mono relative overflow-hidden"
+              className="w-full max-w-sm sm:max-w-md mx-auto rounded-lg sm:rounded-xl p-4 sm:p-6 bg-gradient-to-br from-[#0f1e41] to-[#1b3265] text-white font-mono relative overflow-hidden sm:shadow-lg"
             >
               {/* Top */}
-              <div className="flex items-center mb-8">
+              <div className="flex items-center mb-6 sm:mb-8">
                 {/* Chip */}
-                <div className="w-10 h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded-sm mr-2"></div>
+                <div className="w-8 h-6 sm:w-10 sm:h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded-sm mr-2"></div>
                 {/* Contactless icon */}
                 <div className="flex space-x-0.5">
                   <div className="w-1 h-2 rounded-sm bg-white opacity-50"></div>
@@ -400,29 +400,29 @@ const BankDetailsForm = ({
               </div>
 
               {/* IBAN - copyable */}
-              <div className="text-2xl tracking-widest font-semibold mb-3 flex items-center gap-2">
-                <span>{formatIban(account.iban)}</span>
+              <div className="text-lg sm:text-2xl tracking-wide sm:tracking-widest font-semibold mb-3 flex items-center gap-2">
+                <span className="break-all sm:break-normal">{formatIban(account.iban)}</span>
                 <button 
                   onClick={() => handleCopy(account.iban, account._id)} 
-                  className="text-white hover:text-blue-300 transition-colors"
+                  className="text-white hover:text-blue-300 transition-colors flex-shrink-0"
                 >
-                  {copiedId === account._id ? <FiCheck size={18} /> : <FiCopy size={18} />}
+                  {copiedId === account._id ? <FiCheck size={16} /> : <FiCopy size={16} />}
                 </button>
               </div>
 
               {/* Account Holder */}
               <div className="uppercase text-xs text-slate-300">Cardholder</div>
-              <div className="text-sm mb-3">{account.accountHolderName}</div>
+              <div className="text-sm mb-3 break-words">{account.accountHolderName}</div>
 
               {/* Bank Name */}
               <div className="uppercase text-xs text-slate-300">Bank</div>
-              <div className="text-sm mb-6">{account.bankName}</div>
+              <div className="text-sm mb-4 sm:mb-6 break-words">{account.bankName}</div>
 
               {/* SWIFT & Country */}
               <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
                 <div>
                   <div className="uppercase text-xs">SWIFT</div>
-                  <div className="text-sm">{account.bic || "N/A"}</div>
+                  <div className="text-sm break-words">{account.bic || "N/A"}</div>
                 </div>
                 <div>
                   <div className="uppercase text-xs">Country</div>
@@ -431,10 +431,10 @@ const BankDetailsForm = ({
               </div>
 
               {/* Currency and status */}
-              <div className="flex justify-between items-center mt-6 text-xs">
+              <div className="flex justify-between items-center mt-4 sm:mt-6 text-xs">
                 <span className="uppercase">{account.currency || "N/A"}</span>
                 <span
-                  className={`text-[11px] px-2 py-0.5 rounded-full ${
+                  className={`text-xs px-2 py-1 rounded-full ${
                     account.isVerified
                       ? "bg-green-600 text-white"
                       : "bg-yellow-500 text-white"
@@ -448,19 +448,19 @@ const BankDetailsForm = ({
         </div>
       ) : (
         /* Empty State */
-        <div className="text-center py-12 sm:py-16">
-          <div className="bg-gray-100 rounded-full w-16 sm:w-24 h-16 sm:h-24 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+        <div className="text-center py-12 sm:py-16 px-4 sm:px-0">
+          <div className="bg-gray-100 rounded-full w-16 sm:w-24 h-16 sm:h-24 flex items-center justify-center mx-auto mb-6">
             <FiCreditCard className="text-gray-400" size={28} />
           </div>
           <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
             No Bank Accounts Yet
           </h3>
-          <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 max-w-md mx-auto px-4">
+          <p className="text-sm sm:text-base text-gray-600 mb-8 max-w-md mx-auto">
             Add your first bank account to start receiving payments and managing your finances.
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4  bg-[#3390d5] text-white rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl text-sm sm:text-base"
+            className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-[#3390d5] text-white rounded-lg sm:rounded-xl hover:bg-[#2e7ab3] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
           >
             <FiPlus className="mr-2" size={18} />
             Add Your First Bank Account

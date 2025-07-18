@@ -2,12 +2,12 @@ import React from "react";
 
 const NotificationSettings = ({ darkMode }) => {
   return (
-    <div className="px-4 py-6 sm:px-4 sm:py-6 md:px-6 md:py-8">
-      <h2 className={`text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 md:mb-8 text-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+    <div className="px-0 py-0 sm:px-4 sm:py-6 md:px-6 md:py-8">
+      <h2 className={`text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 md:mb-8 text-center px-4 sm:px-0 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
         Notification Settings
       </h2>
 
-      <div className="w-full max-w-md sm:max-w-lg mx-auto space-y-4 sm:space-y-6 md:space-y-8">
+      <div className="w-full max-w-md sm:max-w-lg mx-auto space-y-0 sm:space-y-6 md:space-y-8">
         {/* === Notification Cards === */}
         {[{
           title: 'Push Notifications',
@@ -23,7 +23,7 @@ const NotificationSettings = ({ darkMode }) => {
             { label: 'Vibration', desc: 'Vibrate for important notifications', checked: true }
           ]
         }].map((section, i) => (
-          <div key={i} className={`p-4 sm:p-6 md:p-8 rounded-lg shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <div key={i} className={`p-4 sm:p-6 md:p-8 rounded-none sm:rounded-lg shadow-none sm:shadow-md ${darkMode ? 'bg-gray-800 border-b border-gray-700' : 'bg-white border-b border-gray-200'} sm:border-none`}>
             <h3 className={`font-semibold mb-4 sm:mb-5 md:mb-6 text-base sm:text-lg ${darkMode ? 'text-white' : 'text-gray-800'}`}>
               {section.title}
             </h3>
