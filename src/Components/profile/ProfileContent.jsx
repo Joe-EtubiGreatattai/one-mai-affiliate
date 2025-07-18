@@ -81,7 +81,7 @@ const ProfileContent = ({
 
   return (
     <div
-      className={`flex-1 p-4 md:p-6 lg:p-8 rounded-lg shadow-md transition-all ${
+      className={`flex-1 p-0 md:p-6 lg:p-8 rounded-none md:rounded-lg md:shadow-md transition-all ${
         darkMode ? "bg-gray-800" : "bg-white"
       }`}
     >
