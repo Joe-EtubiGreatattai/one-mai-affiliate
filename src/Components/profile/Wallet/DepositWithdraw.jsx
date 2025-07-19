@@ -24,7 +24,7 @@ const DepositWithdraw = ({
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: currency || "USD",
+      currency: currency || "EUR",
       minimumFractionDigits: 2,
     }).format(amount);
   };
