@@ -19,28 +19,18 @@ const DashboardLayout = () => {
           <div className="w-full lg:w-2/3">
             <DashBoard />
           </div>
+        </div>
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 w-full mt-4">
+          {/* Dashboard section */}
+          <div className="w-full lg:w-2/3">
+            <Referals />
+          </div>
 
           {/* Recent transactions */}
           <div className="w-full lg:w-1/3">
             <RecentTransactions />
           </div>
         </div>
-        {/* Language & Support
-        <div className="flex flex-col lg:flex-row gap-4 mt-5 mb-1">
-          <div className="w-full lg:w-1/2">
-            <LanguageOptions />
-          </div>
-          <div className="w-full lg:w-1/2">
-            <ContactSupport />
-          </div>
-        </div> */}
-
-        {/* Referals section */}
-        <div className="mt-6 mb-8 w-full">
-          <Referals />
-        </div>
-
-
       </div>
     </>
   );

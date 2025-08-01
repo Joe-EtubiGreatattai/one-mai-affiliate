@@ -244,7 +244,7 @@ const handleSubmit = async (e) => {
               {loading ? "Creating Account..." : "Join OneMAIX"}
             </button>
              {/* 🔵 Google Sign-in */}
-              <GoogleAuthButton buttonText="Sign up with Google" />
+              {/* <GoogleAuthButton buttonText="Sign up with Google" /> */}
           </form>
 
           <div className="mt-4 text-center">

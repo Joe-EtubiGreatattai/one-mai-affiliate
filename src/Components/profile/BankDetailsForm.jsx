@@ -432,7 +432,7 @@ const BankDetailsForm = ({
 
               {/* Currency and status */}
               <div className="flex justify-between items-center mt-4 sm:mt-6 text-xs">
-                <span className="uppercase">{account.currency || "N/A"}</span>
+                <span className="uppercase">Eur</span>
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
                     account.isVerified

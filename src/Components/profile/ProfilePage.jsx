@@ -29,16 +29,16 @@ const ProfilePage = () => {
   const { fetchMyReferrals } = useReferralStore();
 
   const [activeTab, setActiveTab] = useState("profile");
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("darkMode") == "true" ? true : false
-  );
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
   const [localError, setLocalError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const walletLoadedRef = useRef(false);
   const bankLoadedRef = useRef(false);
-  const contentRef = useRef(); // 🔥 Used for scrolling on mobile
 
   useEffect(() => {
     if (bankError) {
@@ -51,11 +51,30 @@ const ProfilePage = () => {
     }
   }, [bankError, walletError, clearBankError, clearWalletError]);
 
+  // Sync dark mode with Layout component
   useEffect(() => {
-    const savedDarkMode = localStorage.getItem("darkMode");
-    if (savedDarkMode !== null) {
-      setDarkMode(savedDarkMode === "true");
-    }
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem('darkMode');
+      const newDarkMode = saved ? JSON.parse(saved) : false;
+      setDarkMode(newDarkMode);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    const observer = new MutationObserver(() => {
+      const hasDarkClass = document.documentElement.classList.contains('dark');
+      setDarkMode(hasDarkClass);
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      observer.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -117,19 +136,8 @@ const ProfilePage = () => {
     const timer = setTimeout(() => {
       loadTabData(activeTab);
     }, 300);
-
     return () => clearTimeout(timer);
   }, [activeTab, loadTabData]);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("darkMode", "true");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("darkMode", "false");
-    }
-  }, [darkMode]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -142,15 +150,21 @@ const ProfilePage = () => {
   const handleTabChange = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
-
-      // Scroll into view on mobile
-      if (window.innerWidth < 768 && contentRef.current) {
-        setTimeout(() => {
-          contentRef.current.scrollIntoView({ behavior: "smooth" });
-        }, 200);
-      }
     }
   };
+
+  // Mobile scroll to content
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    if (!isMobile) return;
+
+    const contentEl = document.getElementById("profile-content-scroll");
+    if (contentEl) {
+      setTimeout(() => {
+        contentEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, [activeTab]);
 
   const handleProfileUpdate = async (formData) => {
     setIsLoading(true);
@@ -173,18 +187,29 @@ const ProfilePage = () => {
     setSuccess(null);
   };
 
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    localStorage.setItem('darkMode', JSON.stringify(newDarkMode));
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
   return (
     <div
-      className={`flex flex-col md:flex-row min-h-screen transition-colors duration-300 ${
+      className={`flex flex-col md:flex-row min-h-screen w-full transition-colors duration-300 ${
         darkMode ? "dark bg-gray-900 text-gray-100" : "bg-white text-gray-800"
       }`}
     >
-      {/* Notification Toast */}
       {(localError || success) && (
         <div
-          className={`fixed top-4 right-4 z-50 p-4 pr-10 rounded-lg shadow-lg max-w-xs md:max-w-md ${
+          className={`fixed top-4 right-4 z-50 px-4 py-3 pr-10 rounded-lg shadow-none md:shadow-lg w-[90vw] max-w-xs md:max-w-md ${
             localError ? "bg-red-500" : "bg-green-500"
-          } text-white animate-fade-in`}
+          } text-white`}
         >
           {localError || success}
           <button
@@ -197,11 +222,10 @@ const ProfilePage = () => {
         </div>
       )}
 
-      {/* Mobile Header */}
-      <div className="md:hidden p-4 border-b dark:border-gray-700 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Profile Settings</h1>
+      <div className="md:hidden p-3 border-b dark:border-gray-700 flex justify-between items-center">
+        <h1 className="text-lg font-bold">Profile Settings</h1>
         <button
-          onClick={() => setDarkMode(!darkMode)}
+          onClick={toggleDarkMode}
           className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
           aria-label="Toggle dark mode"
         >
@@ -209,21 +233,19 @@ const ProfilePage = () => {
         </button>
       </div>
 
-      {/* Sidebar */}
       <ProfileSidebar
         user={user}
         activeTab={activeTab}
         setActiveTab={handleTabChange}
         darkMode={darkMode}
-        toggleDarkMode={() => setDarkMode(!darkMode)}
+        toggleDarkMode={toggleDarkMode}
         handleLogout={logout}
         isLoading={isLoading}
       />
 
-      {/* Main Content */}
-      <main
-        ref={contentRef}
-        className="flex-1 p-4 md:p-6 lg:p-8 transition-all duration-300"
+      <main 
+        id="profile-content-scroll"
+        className="flex-1 p-3 md:p-6 lg:p-8 w-full transition-all duration-300"
       >
         <ProfileContent
           activeTab={activeTab}

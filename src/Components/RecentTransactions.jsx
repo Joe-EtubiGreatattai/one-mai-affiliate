@@ -45,7 +45,7 @@ const RecentTransactions = () => {
   };
 
   return (
-    <div className="w-full bg-white  rounded-lg shadow-sm overflow-hidden border border-gray-100 sm:max-w-xs">
+    <div className="w-full  rounded-lg shadow-sm overflow-hidden border border-gray-100 sm:max-w-xs">
       {/* Header */}
       <div className="p-3 sm:p-4 border-b border-gray-100 flex justify-between items-center">
         <h3 className="text-base sm:text-lg font-semibold text-gray-800">

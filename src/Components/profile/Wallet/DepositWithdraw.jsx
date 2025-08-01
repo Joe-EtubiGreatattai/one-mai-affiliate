@@ -17,14 +17,14 @@ const DepositWithdraw = ({
   accounts,
   bankLoading,
   handleWithdraw,
-  currency,
 }) => {
   const [withdrawError, setWithdrawError] = useState("");
+  const currency = "EUR"; // Set default currency to EUR
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: currency || "EUR",
+      currency: currency,
       minimumFractionDigits: 2,
     }).format(amount);
   };

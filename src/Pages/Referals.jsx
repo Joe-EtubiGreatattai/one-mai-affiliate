@@ -403,19 +403,19 @@ function Referrals() {
           {referralData?.affiliateStats && (
             <>
               <div className="grid grid-cols-1 gap-4">
-                <div className="bg-white p-4 rounded-lg shadow border">
+                <div className=" p-4 rounded-lg shadow border">
                   <h3 className="text-sm text-gray-500 mb-1">Total Referrals</h3>
                   <p className="text-2xl font-bold text-[#3390d5]">
                     {referralData.affiliateStats.totalReferrals}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow border">
+                <div className="p-4 rounded-lg shadow border">
                   <h3 className="text-sm text-gray-500 mb-1">Active Referrals</h3>
                   <p className="text-2xl font-bold text-[#3390d5]">
                     {referralData.affiliateStats.activeReferrals}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow border">
+                <div className="p-4 rounded-lg shadow border">
                   <h3 className="text-sm text-gray-500 mb-1">Total Earnings</h3>
                   <p className="text-2xl font-bold flex items-center text-[#3390d5]">
                     €
@@ -425,7 +425,7 @@ function Referrals() {
               </div>
 
 
-              <div className="bg-white rounded-lg shadow border overflow-hidden">
+              <div className=" rounded-lg shadow border overflow-hidden">
                 <div className="bg-[#3390d5] px-4 py-3">
                   <div className="flex items-center justify-between">
                     <h3 className="text-white font-semibold">Your Referral QR Code</h3>
@@ -546,7 +546,7 @@ function Referrals() {
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5  placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               placeholder="Search by name, email, or status..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -554,10 +554,10 @@ function Referrals() {
           </div>
 
           {/* Referrals Table */}
-          <div className="bg-white shadow rounded-lg border overflow-hidden">
+          <div className="shadow rounded-lg border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-white">
+                <thead className="">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Name
@@ -573,7 +573,7 @@ function Referrals() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200">
                   {filteredReferrals.length > 0 ? (
                     filteredReferrals.map((referral) => (
                       <tr key={referral.referralId} className="hover:bg-white">

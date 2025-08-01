@@ -169,7 +169,7 @@ const Layout = () => {
         ref={desktopSidebarRef}
       >
         <div className="flex justify-between items-center h-20 p-4 border-b border-gray-200 dark:border-gray-700">
-          <img src={Logo} alt="MAI Logo" className="h-12" />
+          <img src={Logo} alt="MAI Logo" className="h-12  ml-10" />
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
