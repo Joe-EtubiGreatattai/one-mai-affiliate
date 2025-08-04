@@ -11,17 +11,20 @@ const DashboardLayout = () => {
 
   return (
     <>
-      <DashBoard welcomeOnly={true} />
       <div className="w-full flex flex-col bg-white dark:bg-gray-900 min-h-screen px-4">
-        {/* Main dashboard content */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 w-full mt-4">
-          {/* Dashboard section */}
-          <div className="w-full lg:w-2/3">
-            <DashBoard />
-          </div>
+        {/* Welcome section */}
+        <div className="mb-6">
+          <DashBoard welcomeOnly={true} />
         </div>
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 w-full mt-4">
-          {/* Dashboard section */}
+
+        {/* Main dashboard content - Full width */}
+        <div className="w-full mb-6">
+          <DashBoard />
+        </div>
+
+        {/* Referrals and Transactions row */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 w-full">
+          {/* Referrals section */}
           <div className="w-full lg:w-2/3">
             <Referals />
           </div>

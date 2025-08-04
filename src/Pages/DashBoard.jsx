@@ -39,6 +39,9 @@ function DashBoard({ welcomeOnly = undefined }) {
   const lastName = user?.lastName || "";
   const profileCompletion = bankDetails?.data ? 100 : 75;
 
+  // Get the actual referral code to display and copy
+  const displayReferralCode = referralCode || "SAVEWITHTIJANI";
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -80,26 +83,46 @@ function DashBoard({ welcomeOnly = undefined }) {
     setBalanceVisible(!balanceVisible);
   };
 
-  const copyReferralCode = () => {
-    if (referralCode) {
-      navigator.clipboard.writeText(referralCode);
+  const copyReferralCode = async () => {
+    try {
+      // Use the same code that's displayed to the user
+      const codeToCopy = displayReferralCode;
+      
+      // Check if navigator.clipboard is available (modern browsers)
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(codeToCopy);
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = codeToCopy;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      
       setCopied(true);
       toast.success("Referral code copied!");
       setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy referral code:', err);
+      toast.error("Failed to copy referral code");
     }
   };
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(amount || 0);
-};
-
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "EUR",
+    }).format(amount || 0);
+  };
 
   if (loading) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
+      <div className="w-full p-4 sm:p-6">
         <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="h-6 bg-gray-200 rounded w-1/2 mb-6"></div>
@@ -115,7 +138,7 @@ const formatCurrency = (amount) => {
 
   if (error) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
+      <div className="w-full p-4 sm:p-6">
         <div className="text-red-500 p-4 bg-red-50 rounded-lg">
           Error: {error}. Please refresh the page or contact support.
         </div>
@@ -129,7 +152,7 @@ const formatCurrency = (amount) => {
         <h1 className="text-2xl sm:text-3xl font-bold dark:text-white text-gray-800 mb-1">
           Dashboard
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-300">
           Welcome Back, {firstName} {lastName}
         </p>
       </div>
@@ -137,50 +160,88 @@ const formatCurrency = (amount) => {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      {/* Main Dashboard Card */}
-      <div className="bg-gray-800 text-white p-6 rounded-2xl shadow-lg">
-        {/* Current Balance Section */}
-        <div className="flex justify-between items-start mb-8">
+    <div className="w-full">
+      {/* Main Dashboard Card - Now uses full width */}
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-6 lg:p-8 rounded-2xl shadow-lg">
+        {/* Header with profile completion indicator */}
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h3 className="text-gray-300 text-sm font-medium mb-2">
-              Current Balance
-            </h3>
-            <p className="text-4xl font-bold">
-              {balanceVisible ? formatCurrency(balance) : "****"}
-            </p>
+            <h2 className="text-xl font-semibold mb-1">Account Overview</h2>
+            <p className="text-gray-300 text-sm">Profile {profileCompletion}% complete</p>
           </div>
-          <button
-            onClick={toggleBalanceVisibility}
-            className="text-gray-400 hover:text-white transition-colors mt-1"
-            aria-label={balanceVisible ? "Hide balance" : "Show balance"}
-          >
-            {balanceVisible ? <FiEyeOff size={20} /> : <FiEye size={20} />}
-          </button>
+          <div className="flex items-center space-x-2">
+            <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+              <span className="text-lg font-bold">
+                {firstName.charAt(0)}{lastName.charAt(0)}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Bottom Section - Referrals and Code */}
-        <div className="flex justify-between items-end">
+        {/* Balance and Stats Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Current Balance Section */}
+          <div className="lg:col-span-2">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-gray-300 text-sm font-medium mb-2">
+                  Current Balance
+                </h3>
+                <p className="text-4xl lg:text-5xl font-bold">
+                  {balanceVisible ? formatCurrency(balance) : "****"}
+                </p>
+              </div>
+              <button
+                onClick={toggleBalanceVisibility}
+                className="text-gray-400 hover:text-white transition-colors mt-1 p-2 hover:bg-gray-700 rounded-lg"
+                aria-label={balanceVisible ? "Hide balance" : "Show balance"}
+              >
+                {balanceVisible ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Account Stats */}
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-gray-300 text-sm font-medium mb-1">
+                Total Referrals
+              </h4>
+              <p className="text-2xl font-bold">{totalReferrals}</p>
+            </div>
+            <div>
+              <h4 className="text-gray-300 text-sm font-medium mb-1">
+                Active Referrals
+              </h4>
+              <p className="text-2xl font-bold text-green-400">{activeReferrals}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Referral Code Section - Full Width */}
+        <div className="bg-gray-700/50 rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h4 className="text-gray-300 text-sm font-medium mb-1">
-              Total Referrals
+              Your Referral Code
             </h4>
-            <p className="text-2xl font-bold">{totalReferrals}</p>
+            <p className="text-lg font-mono font-bold">
+              {displayReferralCode}
+            </p>
           </div>
           
-          <div className="text-right">
-            <div className="text-gray-300 text-sm font-medium mb-2">
-              {referralCode || "SAVEWITHTIJANI"}
-            </div>
-            <button
-              onClick={copyReferralCode}
-              className="flex items-center text-gray-300 hover:text-white transition-colors text-sm"
-              aria-label="Copy referral code"
-            >
-              <FiCopy size={16} className="mr-2" />
-              Copy
-            </button>
-          </div>
+          <button
+            onClick={copyReferralCode}
+            disabled={copied}
+            className={`flex items-center transition-colors px-4 py-2 rounded-lg text-sm font-medium ${
+              copied 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-[#3390d5] hover:bg-[#2980c4]'
+            }`}
+            aria-label="Copy referral code"
+          >
+            <FiCopy size={16} className="mr-2" />
+            {copied ? "Copied!" : "Copy Code"}
+          </button>
         </div>
       </div>
     </div>
