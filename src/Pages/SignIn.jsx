@@ -241,7 +241,7 @@ const SignIn = () => {
             </button>
 
             {/* 🔵 Google Sign-in */}
-            <GoogleAuthButton buttonText="Sign in with Google" />
+            {/* <GoogleAuthButton buttonText="Sign in with Google" /> */}
           </form>
 
           <div className="text-center">
