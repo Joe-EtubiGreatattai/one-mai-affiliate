@@ -1,230 +1,292 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import Family from "../assets/Family.jpeg";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
 import useAuthStore from "../Store/Auth";
 
-const OtpVerification = () => {
+import Image1 from "../assets/0.png";
+import Image2 from "../assets/1.png";
+import Image3 from "../assets/2.png";
+import Image4 from "../assets/1.png";
+
+const OTPVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [countdown, setCountdown] = useState(60); // Changed to 60 seconds for better UX
-  const [canResend, setCanResend] = useState(false);
-  const { verifySignup, loading, error, clearError, resendOtp, resetPassword } =
-    useAuthStore();
+  const [error, setError] = useState("");
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes countdown
+  const [isResending, setIsResending] = useState(false);
+  const inputRefs = useRef([]);
+
   const location = useLocation();
   const navigate = useNavigate();
-  const otpRefs = useRef([]);
+  
+  const {
+    verifyOtp,
+    resendOtp,
+    loading,
+    error: authError,
+    clearError,
+    user,
+  } = useAuthStore();
 
   // Get signup data from navigation state
   const signupData = location.state?.signupData;
+  
+  useEffect(() => {
+    clearError();
+    if (user) {
+      navigate("/dashboard");
+    }
+    
+    // Redirect to signup if no signup data
+    if (!signupData) {
+      navigate("/affilator-create-account");
+    }
+  }, [user, navigate, clearError, signupData]);
 
   useEffect(() => {
-    if (!signupData) {
-      navigate("/signup");
+    if (authError) {
+      setError(authError);
     }
-  }, [signupData, navigate]);
+  }, [authError]);
 
   // Countdown timer
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (countdown > 0) {
-        setCountdown(countdown - 1);
-      } else {
-        setCanResend(true);
-        clearInterval(timer);
-      }
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [countdown]);
+    if (timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [timeLeft]);
 
-  const handleChange = (e, index) => {
+  const handleOtpChange = (e, index) => {
     const value = e.target.value;
-    if (isNaN(value)) return;
+    
+    // Only allow single digit
+    if (value.length > 1) return;
+    
+    // Only allow numbers
+    if (isNaN(value) && value !== "") return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    if (value && index < 3) {
-      document.getElementById(`otp-${index + 1}`).focus();
+    // Auto focus next input
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
     }
 
-    if (value && index === 3) {
-      document.getElementById("verify-button").click();
-    }
+    // Clear error when user starts typing
+    if (error) setError("");
+    if (authError) clearError();
   };
 
   const handleKeyDown = (e, index) => {
+    // Handle backspace to go to previous input
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      document.getElementById(`otp-${index - 1}`).focus();
+      inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const pasteData = e.clipboardData.getData("text/plain").trim();
-    if (!/^\d{6}$/.test(pasteData)) return;
-
-    const pastedOtp = pasteData.split("").slice(0, 6);
-    setOtp(pastedOtp);
-
-    // Focus on the last input after paste
-    document.getElementById(`otp-5`).focus();
+    const pastedData = e.clipboardData.getData("text/plain");
+    const digits = pastedData.replace(/\D/g, "").slice(0, 6);
+    
+    if (digits.length > 0) {
+      const newOtp = [...otp];
+      for (let i = 0; i < digits.length && i < 6; i++) {
+        newOtp[i] = digits[i];
+      }
+      setOtp(newOtp);
+      
+      // Focus the next empty input or the last input if all are filled
+      const nextIndex = Math.min(digits.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    clearError();
-    if (otp.join("").length !== 4) return;
+    setError("");
+
+    const otpCode = otp.join("");
+    if (otpCode.length !== 6) {
+      setError("Please enter the complete 6-digit code");
+      return;
+    }
 
     try {
-      await verifySignup({
-        ...signupData,
-        otp: otp.join(""),
+      await verifyOtp({
+        email: signupData.email,
+        otp: otpCode,
+        signupData: signupData
       });
-      navigate("/create-pin");
     } catch (error) {
       console.error("OTP verification error:", error);
-      setOtp(["", "", "", "", "", ""]);
-      document.getElementById("otp-0").focus();
+      setError(error.message || "Invalid verification code. Please try again.");
     }
   };
 
-  const handleResend = async () => {
-    if (!canResend) return;
-    clearError();
+  const handleResendOtp = async () => {
+    if (timeLeft > 0 || isResending) return;
+    
+    setIsResending(true);
+    setError("");
+    
     try {
-      await resendOtp(
-        // phone: signupData.phoneNumber,
-        signupData.email
-      );
-      setCountdown(60);
-      setCanResend(false);
-      setOtp(["", "", "", "", "", ""]);
-      document.getElementById("otp-0").focus();
+      await resendOtp(signupData.email);
+      setTimeLeft(120); // Reset countdown
+      setOtp(["", "", "", "", "", ""]); // Clear current OTP
+      inputRefs.current[0]?.focus(); // Focus first input
     } catch (error) {
       console.error("Resend OTP error:", error);
+      setError(error.message || "Failed to resend code. Please try again.");
+    } finally {
+      setIsResending(false);
     }
   };
 
-  const formatPhoneNumber = (phone) => {
-    if (!phone) return "";
-    // Format phone number for display (e.g., +1 (234) 567-8901)
-    return phone.replace(/(\+\d{1,3})(\d{3})(\d{3})(\d{4})/, "$1 ($2) $3-$4");
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // Mask email for privacy
+  const maskEmail = (email) => {
+    if (!email) return "";
+    const [username, domain] = email.split("@");
+    const maskedUsername = username.length > 2 
+      ? username[0] + "*".repeat(username.length - 2) + username[username.length - 1]
+      : username;
+    return `${maskedUsername}@${domain}`;
   };
 
   return (
-    <div className="h-dvh flex flex-col md:flex-row overflow-hidden bg-white relative">
-      {/* Left side - Form */}
-      <div className="w-full md:w-1/2 flex flex-col p-4 sm:p-6 h-full flex-center">
-        <div className="w-full max-w-md ">
-          <div className="mb-4 sm:mb-6 text-center">
-            <h2 className="text-2xl font-semibold text-[#2E2E2E]">
-              OTP Verification
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* OTP Verification Form */}
+      <div className="w-full md:w-1/2 sm:bg-white flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8 min-h-screen">
+        <div className="w-full max-w-md space-y-6 sm:space-y-8">
+          <div className="text-left sm:text-center">
+            <h2 className="text-2xl max-sm:text-start sm:text-3xl font-semibold sm:font-bold text-gray-900 mb-1 sm:mb-2">
+              Verify Your Account
             </h2>
-            <p className="text-[#9A9A9A] font-normal mt-2 text-sm">
-              Please type the verification code sent to your phone number or
-              email
+            <p className="text-base sm:text-lg max-sm:text-start max-sm:text-sm text-gray-500 mb-2">
+              We've sent a 6-digit verification code to
+            </p>
+            <p className="text-sm font-medium text-gray-700">
+              {signupData?.email ? maskEmail(signupData.email) : "your email"}
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200">
+            <div className="p-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200">
               {error}
             </div>
           )}
 
-          <div>
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              <div className="flex justify-center space-x-2 sm:space-x-3">
-                {[0, 1, 2, 3].map((index) => (
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-4 text-center">
+                Enter verification code
+              </label>
+              <div className="flex justify-center space-x-3">
+                {otp.map((digit, index) => (
                   <input
                     key={index}
-                    id={`otp-${index}`}
+                    ref={(el) => (inputRefs.current[index] = el)}
                     type="text"
                     inputMode="numeric"
                     maxLength="1"
-                    value={otp[index]}
-                    onChange={(e) => handleChange(e, index)}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(e, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
-                    onPaste={index === 0 ? handlePaste : null} // Only attach paste handler to first input
+                    onPaste={index === 0 ? handlePaste : undefined}
+                    className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     autoFocus={index === 0}
-                    ref={(el) => (otpRefs.current[index] = el)}
-                    className="w-16 h-18 sm:w-16 sm:h-18 text-center text-xl sm:text-2xl font-semibold border border-[#F3F4F6] rounded-md 
-                              focus:outline-none bg-[#F9FAFB] focus:ring-2 focus:ring-[#3390D5] focus:border-[#3390D5]"
+                    disabled={loading}
                   />
                 ))}
               </div>
+            </div>
 
-              <div className="text-center">
-                <p className="text-[#9A9A9A] text-sm font-normal">
-                  Didnt Receive OTP code ?
-                  {canResend ? (
-                    <button
-                      type="button"
-                      onClick={handleResend}
-                      className="text-[#3390D5] hover:underline cursor-pointer"
-                    >
-                      Resend
-                    </button>
-                  ) : (
-                    `Resend code in ${countdown} seconds`
-                  )}
-                </p>
-              </div>
+            <button
+              type="submit"
+              disabled={loading || otp.some((digit) => !digit)}
+              className={`w-full py-3 px-4 text-white font-medium rounded-md transition-colors ${
+                loading || otp.some((digit) => !digit)
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#3390d5] hover:bg-[#2570b5]"
+              }`}
+            >
+              {loading ? "Verifying..." : "Verify Account"}
+            </button>
+          </form>
+
+          {/* Resend Code Section */}
+          <div className="text-center space-y-2">
+            {timeLeft > 0 ? (
+              <p className="text-sm text-gray-600">
+                Resend code in {formatTime(timeLeft)}
+              </p>
+            ) : (
               <button
-                id="verify-button"
-                type="submit"
-                disabled={loading || otp.join("").length !== 4}
-                className={`cursor-pointer w-full mt-6 py-2 sm:py-2 px-4 text-white text-base sm:text-lg font-medium rounded-md transition-colors bg-[#3390D5]`}
+                onClick={handleResendOtp}
+                disabled={isResending}
+                className="text-sm text-[#3390d5] hover:text-[#2570b5] font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Verifying...
-                  </span>
-                ) : (
-                  "Verify Code"
-                )}
+                {isResending ? "Sending..." : "Resend verification code"}
               </button>
-            </form>
+            )}
+            
+            <div className="pt-2">
+              <p className="text-sm text-gray-600">
+                Wrong email?{" "}
+                <Link 
+                  to="/affilator-create-account" 
+                  className="font-medium text-[#3390d5] hover:text-[#2570b5]"
+                >
+                  Go back
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Right side - Image (hidden on mobile) */}
-      <div className="hidden md:flex md:w-1/2 relative bg-blue-900">
-        <img
-          src={Family}
-          alt="Family enjoying savings"
-          className="absolute inset-0 w-full h-full object-cover opacity-90"
-        />
-        <div className="absolute inset-0 bg-[#00182b] opacity-40"></div>
-        <div className="relative z-10 flex flex-col justify-end h-full p-6 sm:p-8">
-          <div className="max-w-md mx-auto text-center text-white">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
-              Welcome to MAI Savings
-            </h2>
-            <p className="text-base sm:text-lg mb-4 sm:mb-6">
-              Join forces with friends and family to save for your dreams!
-            </p>
+      {/* Right Column - Carousel (Same as SignIn page) */}
+      <div className="hidden md:block md:w-1/2 relative">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8">
+          <div className="w-full max-w-md h-full">
+            <Carousel
+              autoPlay
+              infiniteLoop
+              showThumbs={false}
+              showStatus={false}
+              showIndicators={false}
+              showArrows={false}
+              interval={5000}
+              transitionTime={800}
+              swipeable
+              emulateTouch
+              className="h-full"
+            >
+              {[Image1, Image2, Image3, Image4].map((src, idx) => (
+                <div key={idx} className="relative">
+                  <img
+                    src={src}
+                    alt={`Slide ${idx + 1}`}
+                    className="w-full h-full object-fit rounded-lg"
+                    style={{ 
+                      width: '100%',
+                      height: 'auto',
+                      maxHeight: '70vh',
+                      aspectRatio: '4/3'
+                    }}
+                  />
+                </div>
+              ))}
+            </Carousel>
           </div>
         </div>
       </div>
@@ -232,4 +294,4 @@ const OtpVerification = () => {
   );
 };
 
-export default OtpVerification;
+export default OTPVerification;

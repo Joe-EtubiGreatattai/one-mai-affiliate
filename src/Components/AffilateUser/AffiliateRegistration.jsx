@@ -66,50 +66,50 @@ function AffiliateRegistration() {
     return Object.keys(errors).length === 0;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const isValid = validateForm();
+    const isValid = validateForm();
 
-  // If not valid and checkbox is unticked, show an alert
-  if (!isValid) {
-    if (!formData.agreed) {
-      alert('Please tick the checkbox to agree to the Terms and Conditions and Privacy Policy before signing up.');
-      const checkbox = document.getElementById('agreed');
-      if (checkbox) checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // If not valid and checkbox is unticked, show an alert
+    if (!isValid) {
+      if (!formData.agreed) {
+        alert('Please tick the checkbox to agree to the Terms and Conditions and Privacy Policy before signing up.');
+        const checkbox = document.getElementById('agreed');
+        if (checkbox) checkbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
     }
-    return;
-  }
 
-  try {
-    const fullPhone = `${selectedCountry.dialCode}${formData.phone}`;
+    try {
+      // Fix: Use the phone value directly since PhoneInput already returns the full international format
+      const phoneNumber = formData.phone || '';
 
-    await initiateSignup({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phoneNumber: fullPhone,
-      password: formData.password,
-      userType: 'affiliate',
-    });
+      await initiateSignup({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phoneNumber: phoneNumber,
+        password: formData.password,
+        userType: 'affiliate',
+      });
 
-    navigate('/otp', {
-      state: {
-        signupData: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phoneNumber: fullPhone,
-          password: formData.password,
-          userType: 'affiliate',
+      navigate('/otp', {
+        state: {
+          signupData: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phoneNumber: phoneNumber,
+            password: formData.password,
+            userType: 'affiliate',
+          },
         },
-      },
-    });
-  } catch (error) {
-    console.error('Signup error:', error);
-  }
-};
-
+      });
+    } catch (error) {
+      console.error('Signup error:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
@@ -235,6 +235,7 @@ const handleSubmit = async (e) => {
                 <a href="/privacy" className="text-[#3390D5]">Privacy Policy</a>
               </label>
             </div>
+            {formErrors.agreed && <p className="text-sm text-red-600">{formErrors.agreed}</p>}
 
             <button
               type="submit"
