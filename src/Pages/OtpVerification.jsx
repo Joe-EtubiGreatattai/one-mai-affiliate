@@ -1,3 +1,4 @@
+// src/Pages/OtpVerification.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -10,17 +11,17 @@ import Image3 from "../assets/2.png";
 import Image4 from "../assets/1.png";
 
 const OTPVerification = () => {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", ""]); // 4 digits
   const [error, setError] = useState("");
-  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes countdown
+  const [timeLeft, setTimeLeft] = useState(120);
   const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef([]);
 
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const {
-    verifyOtp,
+    verifyOtp,      // wrapper you added in the store (or map to verifySignup)
     resendOtp,
     loading,
     error: authError,
@@ -28,60 +29,51 @@ const OTPVerification = () => {
     user,
   } = useAuthStore();
 
-  // Get signup data from navigation state
+  // signup data carried from previous screen
   const signupData = location.state?.signupData;
-  
+
   useEffect(() => {
     clearError();
+    // if you auto-log users in *before* PIN creation, this would push them to dashboard.
+    // If you want to force PIN flow, avoid setting `user` until after PIN is created.
     if (user) {
-      navigate("/dashboard");
+      // Optional: comment this out if you prefer forcing PIN creation first.
+      // navigate("/dashboard");
     }
-    
-    // Redirect to signup if no signup data
+
     if (!signupData) {
       navigate("/affilator-create-account");
     }
   }, [user, navigate, clearError, signupData]);
 
   useEffect(() => {
-    if (authError) {
-      setError(authError);
-    }
+    if (authError) setError(authError);
   }, [authError]);
 
-  // Countdown timer
+  // countdown
   useEffect(() => {
     if (timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      const timer = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
       return () => clearTimeout(timer);
     }
   }, [timeLeft]);
 
   const handleOtpChange = (e, index) => {
     const value = e.target.value;
-    
-    // Only allow single digit
     if (value.length > 1) return;
-    
-    // Only allow numbers
     if (isNaN(value) && value !== "") return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto focus next input
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 3) inputRefs.current[index + 1]?.focus();
 
-    // Clear error when user starts typing
     if (error) setError("");
     if (authError) clearError();
   };
 
   const handleKeyDown = (e, index) => {
-    // Handle backspace to go to previous input
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -90,17 +82,12 @@ const OTPVerification = () => {
   const handlePaste = (e) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text/plain");
-    const digits = pastedData.replace(/\D/g, "").slice(0, 6);
-    
+    const digits = pastedData.replace(/\D/g, "").slice(0, 4);
     if (digits.length > 0) {
       const newOtp = [...otp];
-      for (let i = 0; i < digits.length && i < 6; i++) {
-        newOtp[i] = digits[i];
-      }
+      for (let i = 0; i < digits.length && i < 4; i++) newOtp[i] = digits[i];
       setOtp(newOtp);
-      
-      // Focus the next empty input or the last input if all are filled
-      const nextIndex = Math.min(digits.length, 5);
+      const nextIndex = Math.min(digits.length, 3);
       inputRefs.current[nextIndex]?.focus();
     }
   };
@@ -110,37 +97,43 @@ const OTPVerification = () => {
     setError("");
 
     const otpCode = otp.join("");
-    if (otpCode.length !== 6) {
-      setError("Please enter the complete 6-digit code");
+    if (otpCode.length !== 4) {
+      setError("Please enter the complete 4-digit code");
       return;
     }
 
     try {
+      // Resolve = success
       await verifyOtp({
         email: signupData.email,
         otp: otpCode,
-        signupData: signupData
+        signupData,
       });
-    } catch (error) {
-      console.error("OTP verification error:", error);
-      setError(error.message || "Invalid verification code. Please try again.");
+
+      // Go to Create PIN page, pass the email (and any other needed data)
+      navigate("/create-pin", {
+        replace: true,
+        state: { email: signupData.email },
+      });
+    } catch (err) {
+      console.error("OTP verification error:", err);
+      setError(err?.message || "Invalid verification code. Please try again.");
     }
   };
 
   const handleResendOtp = async () => {
     if (timeLeft > 0 || isResending) return;
-    
     setIsResending(true);
     setError("");
-    
+
     try {
       await resendOtp(signupData.email);
-      setTimeLeft(120); // Reset countdown
-      setOtp(["", "", "", "", "", ""]); // Clear current OTP
-      inputRefs.current[0]?.focus(); // Focus first input
-    } catch (error) {
-      console.error("Resend OTP error:", error);
-      setError(error.message || "Failed to resend code. Please try again.");
+      setTimeLeft(120);
+      setOtp(["", "", "", ""]);
+      inputRefs.current[0]?.focus();
+    } catch (err) {
+      console.error("Resend OTP error:", err);
+      setError(err?.message || "Failed to resend code. Please try again.");
     } finally {
       setIsResending(false);
     }
@@ -152,19 +145,21 @@ const OTPVerification = () => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Mask email for privacy
   const maskEmail = (email) => {
     if (!email) return "";
     const [username, domain] = email.split("@");
-    const maskedUsername = username.length > 2 
-      ? username[0] + "*".repeat(username.length - 2) + username[username.length - 1]
-      : username;
+    const maskedUsername =
+      username.length > 2
+        ? username[0] +
+          "*".repeat(username.length - 2) +
+          username[username.length - 1]
+        : username;
     return `${maskedUsername}@${domain}`;
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* OTP Verification Form */}
+      {/* Left: OTP form */}
       <div className="w-full md:w-1/2 sm:bg-white flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8 min-h-screen">
         <div className="w-full max-w-md space-y-6 sm:space-y-8">
           <div className="text-left sm:text-center">
@@ -172,7 +167,7 @@ const OTPVerification = () => {
               Verify Your Account
             </h2>
             <p className="text-base sm:text-lg max-sm:text-start max-sm:text-sm text-gray-500 mb-2">
-              We've sent a 6-digit verification code to
+              We've sent a 4-digit verification code to
             </p>
             <p className="text-sm font-medium text-gray-700">
               {signupData?.email ? maskEmail(signupData.email) : "your email"}
@@ -212,9 +207,9 @@ const OTPVerification = () => {
 
             <button
               type="submit"
-              disabled={loading || otp.some((digit) => !digit)}
+              disabled={loading || otp.some((d) => !d)}
               className={`w-full py-3 px-4 text-white font-medium rounded-md transition-colors ${
-                loading || otp.some((digit) => !digit)
+                loading || otp.some((d) => !d)
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-[#3390d5] hover:bg-[#2570b5]"
               }`}
@@ -223,7 +218,6 @@ const OTPVerification = () => {
             </button>
           </form>
 
-          {/* Resend Code Section */}
           <div className="text-center space-y-2">
             {timeLeft > 0 ? (
               <p className="text-sm text-gray-600">
@@ -238,12 +232,12 @@ const OTPVerification = () => {
                 {isResending ? "Sending..." : "Resend verification code"}
               </button>
             )}
-            
+
             <div className="pt-2">
               <p className="text-sm text-gray-600">
                 Wrong email?{" "}
-                <Link 
-                  to="/affilator-create-account" 
+                <Link
+                  to="/affilator-create-account"
                   className="font-medium text-[#3390d5] hover:text-[#2570b5]"
                 >
                   Go back
@@ -254,7 +248,7 @@ const OTPVerification = () => {
         </div>
       </div>
 
-      {/* Right Column - Carousel (Same as SignIn page) */}
+      {/* Right: Carousel */}
       <div className="hidden md:block md:w-1/2 relative">
         <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-14 sm:p-6 lg:p-8">
           <div className="w-full max-w-md h-full">
@@ -277,11 +271,11 @@ const OTPVerification = () => {
                     src={src}
                     alt={`Slide ${idx + 1}`}
                     className="w-full h-full object-fit rounded-lg"
-                    style={{ 
-                      width: '100%',
-                      height: 'auto',
-                      maxHeight: '70vh',
-                      aspectRatio: '4/3'
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxHeight: "70vh",
+                      aspectRatio: "4/3",
                     }}
                   />
                 </div>

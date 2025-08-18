@@ -125,6 +125,25 @@ const useAuthStore = create(
           throw error;
         }
       },
+      verifyOtp: async ({ email, otp, signupData }) => {
+        // Reuse the existing verifySignup flow
+        const { verifySignup, otpData } = get();
+
+        const payload = {
+          phoneNumber:
+            signupData?.phoneNumber ||
+            signupData?.phone ||
+            otpData?.phone || null,   // fallback if phone came via initiate
+          otp,
+          password: signupData?.password,
+          referralCode: signupData?.referralCode,
+          userType: signupData?.userType || "affiliate", // matches your resend flow
+        };
+
+        // Delegate to the existing implementation (handles loading, errors, toasts)
+        return await verifySignup(payload);
+      },
+
 
       updateProfile: async (data) => {
         set({ loading: true, error: null });
@@ -192,8 +211,7 @@ const useAuthStore = create(
           });
 
           toast.success(
-            `OTP sent to your ${
-              response.data.data.via === "email" ? "email" : "phone"
+            `OTP sent to your ${response.data.data.via === "email" ? "email" : "phone"
             }`
           );
           return response.data;
@@ -488,8 +506,7 @@ const useAuthStore = create(
           });
 
           toast.success(
-            `OTP resent to your ${
-              response.data.data.via === "email" ? "email" : "phone"
+            `OTP resent to your ${response.data.data.via === "email" ? "email" : "phone"
             }`
           );
           return response.data;
